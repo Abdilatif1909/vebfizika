@@ -1,0 +1,25 @@
+{
+  "name": "education-platform-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173"
+  },
+  "dependencies": {
+    "@ruffle-rs/ruffle": "^0.2.0-nightly.2026.5.6",
+    "@tailwindcss/vite": "^4.2.4",
+    "@vitejs/plugin-react": "^5.0.0",
+    "axios": "^1.15.2",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
+    "recharts": "^3.8.1",
+    "tailwindcss": "^4.2.4",
+    "vite": "^7.0.0"
+  }
+}

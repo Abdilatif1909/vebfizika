@@ -1,0 +1,5 @@
+@import "./simulationShared.css";
+
+.ideal-gas-theme {
+  --sim-accent: #2563eb;
+}

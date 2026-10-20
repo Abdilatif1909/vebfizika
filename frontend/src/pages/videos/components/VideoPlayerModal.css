@@ -1,0 +1,133 @@
+.video-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(2, 6, 23, 0.82);
+  backdrop-filter: blur(12px);
+  animation: videoModalFade 220ms ease;
+}
+
+.video-modal-panel {
+  width: min(1120px, 100%);
+  max-height: 92vh;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1.75rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+  box-shadow: 0 30px 120px rgba(15, 23, 42, 0.55);
+  color: #fff;
+  animation: videoModalRise 260ms ease;
+}
+
+.video-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 1.25rem 1rem;
+}
+
+.video-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  background: rgba(96, 165, 250, 0.14);
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.video-modal-header h3 {
+  margin: 0.7rem 0 0.3rem;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+  font-weight: 900;
+}
+
+.video-modal-header p {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.video-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.video-modal-download,
+.video-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  font-weight: 800;
+}
+
+.video-modal-download {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+}
+
+.video-modal-close {
+  width: 2.8rem;
+  height: 2.8rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.video-modal-player-wrap {
+  padding: 0 1rem 1rem;
+}
+
+.video-modal-player {
+  display: block;
+  width: 100%;
+  max-height: calc(92vh - 7rem);
+  border-radius: 1.25rem;
+  background: #000;
+}
+
+@keyframes videoModalFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes videoModalRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 720px) {
+  .video-modal-header {
+    flex-direction: column;
+  }
+
+  .video-modal-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .video-modal-download {
+    flex: 1;
+  }
+}

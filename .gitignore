@@ -14,8 +14,13 @@ venv.bak/
 !.env.*.example
 *.pem
 *.key
+*.p8
 *.p12
 *.pfx
+*.crt
+*.cer
+*.secret
+*.credentials
 
 # Python bytecode and caches
 __pycache__/
@@ -30,11 +35,24 @@ __pycache__/
 /db.sqlite3-journal
 *.sqlite3
 *.sqlite3-journal
+*.sqlite
+*.db
 /staticfiles/
 /media/
 /uploads/
 *.log
 local_settings.py
+
+# Local backups and database exports
+*.bak
+*.backup
+*.old
+*.orig
+*.dump
+*.sql.gz
+*.zip
+*.tar
+*.tar.gz
 
 # User-provided content and large datasets (store outside Git)
 /materiallar/
@@ -98,7 +116,6 @@ Desktop.ini
 *.aab
 *.jks
 *.keystore
-
 
 
 
