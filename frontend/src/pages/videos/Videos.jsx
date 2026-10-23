@@ -8,7 +8,7 @@ import VideoPlayerModal from "./components/VideoPlayerModal.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import studentAnalyticsService from "../../services/studentAnalyticsService.js";
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api").replace(/\/+$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/+$/, "");
 const API_URL = `${API_BASE_URL}/videos/`;
 
 function formatDuration(seconds) {

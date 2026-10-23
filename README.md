@@ -76,3 +76,19 @@ Set these environment variables in the cPanel Python application settings:
 Before enabling redirect or HSTS, install/enable AutoSSL for both `web-fizika.uz` and `www.web-fizika.uz`. Check each HTTPS URL in a browser for the correct hostname, valid dates, and a trusted certificate chain. Test the HTTPS page, login/session, and a CSRF-protected request. Then enable Django's redirect or cPanel's HTTP-to-HTTPS redirect and verify there is no redirect loop. Enable HSTS only after stable HTTPS operation on both domains.
 
 After changing code or environment variables, restart the Python application with cPanel's **Restart** control (or Ahost's documented Passenger `tmp/restart.txt` procedure). After restart, verify the app, API, login, and static files. Check `curl -I http://web-fizika.uz/` and `curl -I https://web-fizika.uz/`; repeat for `www` if it is separately served. Confirm the expected redirect and, only after enabling HSTS, the `Strict-Transport-Security` response header.
+
+### React/Vite production build on cPanel
+
+The Django root URL serves the Vite-built SPA, while `/api/` and `/admin/` remain Django routes. Production JavaScript and CSS use `/static/frontend/`; `collectstatic` copies `frontend/dist/` into `staticfiles/frontend/`. The Vite build directory is generated and ignored by Git, so build it on the server after pulling source:
+
+```sh
+cd ~/vebfizika/frontend
+npm ci
+npm run build
+cd ~/vebfizika
+source ~/virtualenv/vebfizika/3.12/bin/activate
+python manage.py check
+python manage.py collectstatic --noinput
+```
+
+Configure Ahost/Apache to serve `staticfiles/` at `/static/`. The frontend API default is same-origin `/api`. To use the Vite proxy in local development, set `DJANGO_DEV_SERVER` to your Django development server origin before `npm run dev` (for example, `http://127.0.0.1:8000`).
