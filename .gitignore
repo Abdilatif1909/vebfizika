@@ -38,6 +38,7 @@ __pycache__/
 *.sqlite
 *.db
 /staticfiles/
+/tmp/
 /media/
 /uploads/
 *.log
@@ -71,7 +72,10 @@ local_settings.py
 
 # Node / frontend dependencies and build output
 **/node_modules/
-/frontend/dist/
+/frontend/dist/*
+!/frontend/dist/index.html
+!/frontend/dist/assets/
+!/frontend/dist/assets/**
 /frontend/build/
 /frontend/.vite/
 /frontend/coverage/
@@ -95,9 +99,7 @@ coverage.xml
 
 # IDE and operating system files
 .idea/
-.vscode/*
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 *.swp
 *.swo
 *~

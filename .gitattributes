@@ -1,1 +1,5 @@
 /frontend/dist/** text eol=lf
+/.env.example whitespace=cr-at-eol
+/.gitignore whitespace=cr-at-eol
+/hello/tests.py whitespace=cr-at-eol
+/requirements.txt whitespace=cr-at-eol

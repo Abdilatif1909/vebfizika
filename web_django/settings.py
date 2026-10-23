@@ -7,18 +7,22 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+def env_bool(name, default=False):
+    return os.environ.get(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
+
+
+# Fail closed: explicitly enable DEBUG for local development and always provide
+# DJANGO_SECRET_KEY through the process environment or cPanel application config.
+DEBUG = env_bool("DJANGO_DEBUG", False)
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
-    if not DEBUG:
-        raise ImproperlyConfigured("Set DJANGO_SECRET_KEY when DJANGO_DEBUG is false.")
-    SECRET_KEY = "dev-only-key-do-not-use-in-production"
+    raise ImproperlyConfigured("Set DJANGO_SECRET_KEY in the environment.")
 
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
         "DJANGO_ALLOWED_HOSTS",
-        "localhost,127.0.0.1,web-fizika.uz,www.web-fizika.uz",
+        "localhost,127.0.0.1,veb-fizika.uz,www.veb-fizika.uz",
     ).split(",")
     if host.strip()
 ]
@@ -27,7 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "DJANGO_CSRF_TRUSTED_ORIGINS",
-        "https://web-fizika.uz,https://www.web-fizika.uz",
+        "https://veb-fizika.uz,https://www.veb-fizika.uz",
     ).split(",")
     if origin.strip()
 ]
@@ -43,6 +47,7 @@ if find_spec("corsheaders"):
 
 LOCAL_APPS = [
     "common",
+    "hello",
     "accounts",
     "subjects",
     "documents",
@@ -67,6 +72,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 if find_spec("corsheaders"):
@@ -132,28 +138,26 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Enable redirect and HSTS only after HTTPS is verified at the hosting proxy.
-SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "False").lower() == "true"
+SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
 SESSION_COOKIE_SECURE = os.environ.get(
     "DJANGO_SESSION_COOKIE_SECURE", str(not DEBUG)
-).lower() == "true"
+).strip().lower() in {"1", "true", "yes", "on"}
 CSRF_COOKIE_SECURE = os.environ.get(
     "DJANGO_CSRF_COOKIE_SECURE", str(not DEBUG)
-).lower() == "true"
+).strip().lower() in {"1", "true", "yes", "on"}
 SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "0"))
-SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
-    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", "False"
-).lower() == "true"
-SECURE_HSTS_PRELOAD = os.environ.get("DJANGO_SECURE_HSTS_PRELOAD", "False").lower() == "true"
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
 
 # Opt in only when Ahost confirms this exact header comes from its trusted proxy.
-if os.environ.get("DJANGO_TRUST_X_FORWARDED_PROTO", "False").lower() == "true":
+if env_bool("DJANGO_TRUST_X_FORWARDED_PROTO", False):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
+        "http://localhost:5173,http://127.0.0.1:5173,https://veb-fizika.uz,https://www.veb-fizika.uz",
     ).split(",")
     if origin.strip()
 ]

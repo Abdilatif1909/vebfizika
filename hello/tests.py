@@ -26,7 +26,9 @@ class TestViews(TestCase):
         self.client = Client()
 
     def test_not_found_url(self):
-        response = self.client.get('/a-url-that-does-not-exist')
+        # Unknown frontend routes intentionally return the React SPA shell.
+        # Check an unknown API route for a backend 404 instead.
+        response = self.client.get('/api/a-url-that-does-not-exist/')
 
-        self.assertEquals(response.status_code, 404)
- 
+        self.assertEqual(response.status_code, 404)
+
