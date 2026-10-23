@@ -134,6 +134,16 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     ("frontend", BASE_DIR / "frontend" / "dist"),
 ]
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    # Compress without manifest renaming; Vite already emits hashed asset names
+    # and index.html references those exact names directly.
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
