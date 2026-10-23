@@ -16,8 +16,20 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1,web-fizika.uz,www.web-fizika.uz",
+    ).split(",")
     if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "https://web-fizika.uz,https://www.web-fizika.uz",
+    ).split(",")
+    if origin.strip()
 ]
 
 THIRD_PARTY_APPS = [
@@ -114,6 +126,24 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Enable redirect and HSTS only after HTTPS is verified at the hosting proxy.
+SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "False").lower() == "true"
+SESSION_COOKIE_SECURE = os.environ.get(
+    "DJANGO_SESSION_COOKIE_SECURE", str(not DEBUG)
+).lower() == "true"
+CSRF_COOKIE_SECURE = os.environ.get(
+    "DJANGO_CSRF_COOKIE_SECURE", str(not DEBUG)
+).lower() == "true"
+SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", "False"
+).lower() == "true"
+SECURE_HSTS_PRELOAD = os.environ.get("DJANGO_SECURE_HSTS_PRELOAD", "False").lower() == "true"
+
+# Opt in only when Ahost confirms this exact header comes from its trusted proxy.
+if os.environ.get("DJANGO_TRUST_X_FORWARDED_PROTO", "False").lower() == "true":
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
