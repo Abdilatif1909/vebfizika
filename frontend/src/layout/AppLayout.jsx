@@ -1,15 +1,17 @@
-import { Bell, ChevronDown, GraduationCap, LogOut, Menu, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bell, ChevronDown, GraduationCap, LogOut, Menu, Search, X } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext.jsx";
 import { filterNavigationByRole, navigation, secondaryNavigation } from "../routes/navigation.js";
 
-function NavItem({ item }) {
+function NavItem({ item, onNavigate }) {
   const Icon = item.icon;
 
   return (
     <NavLink
       to={item.path}
+      onClick={onNavigate}
       className={({ isActive }) =>
         [
           "group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition",
@@ -27,6 +29,7 @@ function NavItem({ item }) {
 
 export default function AppLayout({ children }) {
   const { user, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const role = user?.role;
   const primaryItems = filterNavigationByRole(navigation, role);
   const managementItems = filterNavigationByRole(secondaryNavigation, role);
@@ -42,6 +45,18 @@ export default function AppLayout({ children }) {
     admin: "admin",
     guest: "mehmon",
   };
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileMenuOpen]);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -75,10 +90,17 @@ export default function AppLayout({ children }) {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-blue-100 bg-white/85 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-8">
+        <header className={`sticky top-0 ${mobileMenuOpen ? "z-50" : "z-30"} border-b border-blue-100 bg-white/85 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-8`}>
           <div className="flex items-center gap-4">
-            <button className="flex h-11 w-11 items-center justify-center rounded-2xl border border-blue-100 bg-white text-slate-600 lg:hidden">
-              <Menu size={20} />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-white text-slate-600 lg:hidden"
+              aria-label={mobileMenuOpen ? "Menyuni yopish" : "Menyuni ochish"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
             <div className="min-w-0 flex-1">
@@ -126,6 +148,38 @@ export default function AppLayout({ children }) {
             </button>
           </div>
         </header>
+
+        {mobileMenuOpen && (
+          <>
+            <button
+              type="button"
+              className="fixed inset-x-0 bottom-0 top-[76px] z-40 bg-slate-950/35 lg:hidden"
+              onClick={closeMobileMenu}
+              aria-label="Menyuni yopish"
+            />
+            <aside
+              id="mobile-navigation"
+              className="fixed bottom-0 left-0 top-[76px] z-40 w-[min(20rem,85vw)] overflow-y-auto border-t border-blue-100 bg-white px-4 py-5 shadow-xl lg:hidden"
+              aria-label="Mobil navigatsiya"
+            >
+              <nav className="space-y-1.5">
+                {primaryItems.map((item) => (
+                  <NavItem item={item} key={item.path} onNavigate={closeMobileMenu} />
+                ))}
+              </nav>
+              {managementItems.length > 0 && (
+                <div className="mt-6">
+                  <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wide text-slate-400">Boshqaruv</p>
+                  <nav className="space-y-1.5">
+                    {managementItems.map((item) => (
+                      <NavItem item={item} key={item.path} onNavigate={closeMobileMenu} />
+                    ))}
+                  </nav>
+                </div>
+              )}
+            </aside>
+          </>
+        )}
 
         <main className="px-4 py-6 sm:px-6 lg:px-8">{children || <Outlet />}</main>
       </div>
