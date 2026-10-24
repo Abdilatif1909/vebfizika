@@ -2,7 +2,7 @@ import { BookOpen } from "lucide-react";
 
 import ContentPage from "./ContentPage.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { getFileTypeLabel } from "../services/api.js";
+import { getFileTypeLabel, getResourceActionLink } from "../services/api.js";
 import studentAnalyticsService from "../services/studentAnalyticsService.js";
 
 export default function Theory() {
@@ -10,10 +10,8 @@ export default function Theory() {
   const sortByTitle = (left, right) =>
     (left.title || "").localeCompare(right.title || "", undefined, { numeric: true, sensitivity: "base" });
 
-  const onlyImportedPdfTheory = (row) => {
-    const attachment = row.attachment || "";
-    return attachment.includes("theory/attachments/theory/imported/") && attachment.toLowerCase().endsWith(".pdf");
-  };
+  const supportedTheoryFileTypes = new Set(["PDF", "PPT", "PPTX", "DOC", "DOCX"]);
+  const supportedTheoryAttachments = (row) => supportedTheoryFileTypes.has(getFileTypeLabel(row));
 
   const trackTheoryOpen = (row) => {
     if (user?.role !== "student") {
@@ -38,9 +36,10 @@ export default function Theory() {
       resource="theory-lessons"
       icon={BookOpen}
       tone="violet"
-      filterRows={onlyImportedPdfTheory}
+      filterRows={supportedTheoryAttachments}
       sortRows={sortByTitle}
       card={{
+        authenticatedFileActions: true,
         title: (row) => row.title,
         subtitle: (row) => row.content || "Nazariy bilimlar uchun tayyorlangan PDF material.",
         meta: (row) => `${row.published ? "Chop etilgan" : "Qoralama"} • ${row.estimated_minutes || 0} daqiqa`,
@@ -48,7 +47,7 @@ export default function Theory() {
         previewLabel: "Ko'rish",
         previewTarget: "_self",
         actionLabel: "Yuklab olish",
-        actionDownload: true,
+        actionHref: (row) => getResourceActionLink(row, "download"),
       }}
       columns={[
         { key: "title", label: "Material" },

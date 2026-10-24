@@ -1,7 +1,7 @@
-from django.db.models import Q
 from rest_framework import viewsets
 
-from subjects.models import Enrollment
+from common.responses import PrivateResponseMixin
+from theory.access import visible_theory_lessons
 from theory.models import TheoryLesson, TheoryLessonProgress, TheoryTopic
 from theory.serializers import TheoryLessonProgressSerializer, TheoryLessonSerializer, TheoryTopicSerializer
 
@@ -25,7 +25,7 @@ class TheoryTopicViewSet(viewsets.ModelViewSet):
         return queryset.none()
 
 
-class TheoryLessonViewSet(viewsets.ModelViewSet):
+class TheoryLessonViewSet(PrivateResponseMixin, viewsets.ModelViewSet):
     queryset = TheoryLesson.objects.select_related("topic", "module", "author").all()
     serializer_class = TheoryLessonSerializer
     search_fields = ["title", "content", "topic__title", "author__username"]
@@ -33,15 +33,7 @@ class TheoryLessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = TheoryLesson.objects.select_related("subject", "course", "topic", "module", "author").all()
-        user = self.request.user
-        if not user.is_authenticated or user.is_staff or getattr(user, "role", "") == "admin":
-            return queryset
-        if getattr(user, "role", "") == "teacher":
-            return queryset.filter(Q(course__teacher=user) | Q(author=user) | Q(course__isnull=True, author__isnull=True)).distinct()
-        if getattr(user, "role", "") == "student":
-            courses = Enrollment.objects.filter(user=user, status=Enrollment.Status.ACTIVE).values_list("course_id", flat=True)
-            return queryset.filter(Q(course_id__in=courses) | Q(course__isnull=True), published=True).distinct()
-        return queryset.none()
+        return visible_theory_lessons(queryset, self.request.user)
 
 
 class TheoryLessonProgressViewSet(viewsets.ModelViewSet):

@@ -37,7 +37,7 @@ from dashboard.views import (
 )
 from accounts.viewsets import GroupViewSet, ProfileViewSet, UserViewSet
 from dashboard.viewsets import ActivityLogViewSet, AnnouncementViewSet, DashboardMetricViewSet
-from documents.views import DocumentBulkDownloadView
+from documents.views import DocumentBulkDownloadView, DocumentFileView
 from documents.viewsets import DocumentCategoryViewSet, DocumentDownloadViewSet, DocumentViewSet
 from laboratory.viewsets import LabExperimentViewSet, LabReportViewSet
 from mobileapps.viewsets import MobileAppReleaseViewSet, MobileAppViewSet
@@ -47,6 +47,7 @@ from simulations.viewsets import SimulationProgressViewSet, SimulationViewSet
 from subjects.viewsets import CertificateViewSet, CourseModuleViewSet, CourseViewSet, EnrollmentViewSet, SubjectViewSet
 from testsystem.viewsets import AnswerViewSet, ChoiceViewSet, QuestionViewSet, TestAttemptViewSet, TestViewSet
 from theory.viewsets import TheoryLessonProgressViewSet, TheoryLessonViewSet, TheoryTopicViewSet
+from theory.views import TheoryLessonFileView
 from videos.views import AvailableVideoFilesView
 from videos.viewsets import VideoPlaylistViewSet, VideoProgressViewSet, VideoViewSet
 
@@ -88,6 +89,8 @@ router.register("activity-logs", ActivityLogViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/documents/bulk-download/", DocumentBulkDownloadView.as_view(), name="documents_bulk_download"),
+    path("api/documents/<int:pk>/file/", DocumentFileView.as_view(), name="document_file"),
+    path("api/theory-lessons/<int:pk>/file/", TheoryLessonFileView.as_view(), name="theory_lesson_file"),
     path("api/videos/", AvailableVideoFilesView.as_view(), name="available_video_files"),
     path("api/mobile-app/", AvailableMobileAppView.as_view(), name="available_mobile_app"),
     path("api/", include(router.urls)),

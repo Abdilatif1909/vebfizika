@@ -11,6 +11,7 @@ export default function ContentGridCard({
   tone = "blue",
   primaryAction,
   secondaryAction,
+  fileUnavailable = false,
 }) {
   const tones = {
     blue: "bg-blue-50 text-blue-700",
@@ -34,6 +35,11 @@ export default function ContentGridCard({
       <h3 className="line-clamp-2 text-lg font-black tracking-tight text-slate-950">{title}</h3>
       {subtitle && <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{subtitle}</p>}
       {meta && <p className="mt-4 text-xs font-bold uppercase tracking-wide text-slate-400">{meta}</p>}
+      {fileUnavailable && (
+        <p role="status" className="mt-4 text-sm font-semibold text-rose-700">
+          Fayl hozir serverda mavjud emas. Administratorga murojaat qiling.
+        </p>
+      )}
       <div className="mt-5 flex flex-wrap gap-3">
         {secondaryAction?.href && (
           <a

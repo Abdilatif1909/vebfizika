@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./Videos.css";
 import PhysicsVideoCard from "./components/PhysicsVideoCard.jsx";
 import VideoPlayerModal from "./components/VideoPlayerModal.jsx";
+import { filterVideoSources, VIDEO_SOURCES } from "./videoSources.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import studentAnalyticsService from "../../services/studentAnalyticsService.js";
 
@@ -165,6 +166,8 @@ export default function Videos() {
     return videos.filter((item) => [item.title, item.name, item.subtitle].some((value) => value.toLowerCase().includes(normalizedQuery)));
   }, [query, videos]);
 
+  const filteredSources = useMemo(() => filterVideoSources(VIDEO_SOURCES, videos, query), [query, videos]);
+
   const totalDurationMinutes = useMemo(() => {
     const totalSeconds = videos.reduce((sum, item) => sum + (item.durationSeconds || 0), 0);
     return totalSeconds > 0 ? Math.round(totalSeconds / 60) : null;
@@ -239,6 +242,29 @@ export default function Videos() {
           <Video size={18} /> {filteredVideos.length} ta video topildi
         </div>
       </section>
+
+      {filteredSources.length > 0 && (
+        <section className="videos-sources" aria-labelledby="videos-sources-title">
+          <div className="videos-sources-heading">
+            <h2 id="videos-sources-title">Tavsiya etilgan YouTube manbalari</h2>
+            <p>Playlist va kanal sahifalarini YouTube’da oching.</p>
+          </div>
+          <div className="videos-grid">
+            {filteredSources.map((source) => (
+              <article className="videos-source-card" key={source.id}>
+                <span className="videos-source-type">{source.type}</span>
+                <div>
+                  <h3>{source.title}</h3>
+                  <p>{source.description}</p>
+                </div>
+                <a className="videos-source-action" href={source.url} target="_blank" rel="noopener noreferrer">
+                  {source.action} <span aria-hidden="true">↗</span>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {loading ? (
         <section className="videos-loading">

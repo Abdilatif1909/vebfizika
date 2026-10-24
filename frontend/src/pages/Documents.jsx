@@ -2,7 +2,7 @@ import { Download, FileText } from "lucide-react";
 
 import ContentPage from "./ContentPage.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { getFileTypeLabel, resolveMediaUrl } from "../services/api.js";
+import { getFileTypeLabel, getResourceActionLink, resolveMediaUrl } from "../services/api.js";
 import studentAnalyticsService from "../services/studentAnalyticsService.js";
 
 export default function Documents() {
@@ -34,13 +34,14 @@ export default function Documents() {
       icon={FileText}
       tone="blue"
       card={{
+        authenticatedFileActions: true,
         title: (row) => row.title,
         subtitle: (row) => row.description || "Kursga oid dars hujjati ko'rib chiqishga va yuklab olishga tayyor.",
         meta: (row) => `${row.access_level || "public"} • ${row.downloads_count || 0} yuklab olish`,
         badge: (row) => getFileTypeLabel(row),
         previewLabel: "Ko'rish",
         actionLabel: "Yuklab olish",
-        actionDownload: true,
+        actionHref: (row) => getResourceActionLink(row, "download"),
         previewTarget: "_self",
       }}
       sortRows={sortByTitle}

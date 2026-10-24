@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "/api";
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, "");
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
@@ -46,6 +46,8 @@ export function resolveMediaUrl(value) {
 
 export function getResourceLink(row) {
   const candidate =
+    row?.file_url ||
+    row?.attachment_url ||
     row?.file ||
     row?.attachment ||
     row?.resource_file ||
@@ -62,14 +64,57 @@ export function getFileTypeLabel(row) {
   if (!resourceLink) {
     return "ITEM";
   }
-  const sanitized = resourceLink.split("?")[0].split("#")[0];
-  const extension = sanitized.includes(".") ? sanitized.slice(sanitized.lastIndexOf(".") + 1).toUpperCase() : "LINK";
+  let filename = "";
+  try {
+    const parsed = new URL(resourceLink, "https://resource.invalid");
+    filename = parsed.searchParams.get("filename") || parsed.pathname.split("/").pop() || "";
+  } catch {
+    filename = resourceLink.split("?")[0].split("#")[0].split("/").pop() || "";
+  }
+  const extension = filename.includes(".") ? filename.slice(filename.lastIndexOf(".") + 1).toUpperCase() : "LINK";
   return extension || "ITEM";
 }
 
 export function isPreviewableResource(row) {
   const previewable = new Set(["PDF", "JPG", "JPEG", "PNG", "TXT", "HTML", "HTM", "MP4", "MOV", "AVI"]);
   return previewable.has(getFileTypeLabel(row));
+}
+
+export function getResourceActionLink(row, action) {
+  const resourceLink = getResourceLink(row);
+  if (!resourceLink) return "";
+  const isAbsolute = /^https?:\/\//i.test(resourceLink);
+  const parsed = new URL(resourceLink, "https://resource.invalid");
+  if (action === "download") parsed.searchParams.set("download", "1");
+  else parsed.searchParams.delete("download");
+  return isAbsolute ? parsed.toString() : `${parsed.pathname}${parsed.search}${parsed.hash}`;
+}
+
+export async function fetchResourceFile(row, action) {
+  const resourceUrl = getResourceActionLink(row, action);
+  const resolvedUrl = resolveMediaUrl(resourceUrl);
+  const requestUrl = /^https?:\/\//i.test(resolvedUrl)
+    ? resolvedUrl
+    : new URL(resolvedUrl, window.location.origin).toString();
+  try {
+    const response = await client.get(requestUrl, { responseType: "blob" });
+    const url = new URL(resourceUrl, window.location.origin);
+    return {
+      blob: new Blob([response.data], { type: response.headers["content-type"] || response.data.type }),
+      filename: url.searchParams.get("filename") || "download",
+    };
+  } catch (error) {
+    let message = error.response?.data?.detail || error.response?.data?.message || error.message;
+    if (error.response?.data instanceof Blob) {
+      try {
+        const payload = JSON.parse(await error.response.data.text());
+        message = payload.detail || payload.message || message;
+      } catch {
+        // Keep the request error when the response is not a JSON error payload.
+      }
+    }
+    throw new Error(message || "Faylni yuklab bo'lmadi.");
+  }
 }
 
 client.interceptors.request.use((config) => {

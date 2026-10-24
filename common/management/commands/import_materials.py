@@ -5,7 +5,6 @@ from pathlib import Path
 from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
 from django.utils.text import slugify
 
 from dashboard.models import ActivityLog, Announcement, DashboardMetric
@@ -68,7 +67,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.NOTICE(f"Scanning materials in {source_root}"))
         context = self.bootstrap_context()
-        summary = {"imported": 0, "updated": 0, "skipped": 0, "errors": 0}
+        summary = {"imported": 0, "existing": 0, "skipped": 0, "errors": 0}
         skipped = []
 
         for file_path in sorted(path for path in source_root.rglob("*") if path.is_file()):
@@ -82,7 +81,7 @@ class Command(BaseCommand):
 
             try:
                 created = self.import_file(source_root, file_path, relative_path, context)
-                summary["imported" if created else "updated"] += 1
+                summary["imported" if created else "existing"] += 1
             except Exception as exc:  # noqa: BLE001
                 summary["errors"] += 1
                 self.stderr.write(self.style.ERROR(f"Failed to import {relative_path}: {exc}"))
@@ -91,14 +90,14 @@ class Command(BaseCommand):
         ActivityLog.objects.create(
             action="Bulk material import completed",
             target_type="material_import",
-            target_id=str(summary["imported"] + summary["updated"]),
+            target_id=str(summary["imported"] + summary["existing"]),
             metadata={"summary": summary, "skipped": skipped[:50], "source": str(source_root)},
         )
 
         self.stdout.write(self.style.SUCCESS("Material import finished."))
         self.stdout.write(
             self.style.SUCCESS(
-                f"Imported: {summary['imported']} | Updated: {summary['updated']} | Skipped: {summary['skipped']} | Errors: {summary['errors']}"
+                f"Imported: {summary['imported']} | Existing checked: {summary['existing']} | Skipped: {summary['skipped']} | Errors: {summary['errors']}"
             )
         )
 
@@ -121,12 +120,6 @@ class Command(BaseCommand):
                 "published": True,
             },
         )
-        if shared_course.subject_id != subject.id or not shared_course.published:
-            shared_course.subject = subject
-            shared_course.published = True
-            shared_course.description = shared_course.description or "Shared course used for imported practical and test resources."
-            shared_course.save(update_fields=["subject", "published", "description", "updated_at"])
-
         categories = {
             "Darslik": self.get_or_create_category("Darslik", "Imported textbooks and manuals."),
             "Ko'rgazmali qurol": self.get_or_create_category("Ko'rgazmali qurol", "Imported visual learning aids."),
@@ -138,9 +131,6 @@ class Command(BaseCommand):
     def get_or_create_category(self, name, description):
         category = DocumentCategory.objects.filter(name__iexact=name).first()
         if category:
-            if description and not category.description:
-                category.description = description
-                category.save(update_fields=["description", "updated_at"])
             return category
         return DocumentCategory.objects.create(
             name=name,
@@ -182,9 +172,9 @@ class Command(BaseCommand):
             "pinned": pinned,
         }
         announcement, created = Announcement.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(announcement, defaults)
-        self.attach_file(announcement, "attachment", file_path, relative_path, "announcements/imported")
-        announcement.save()
+        file_changed = self.attach_file(announcement, "attachment", file_path, relative_path, "announcements/imported")
+        if created or file_changed:
+            announcement.save()
         return created
 
     def import_theory_lesson(self, file_path, relative_path, context):
@@ -204,9 +194,9 @@ class Command(BaseCommand):
             "published": True,
         }
         lesson, created = TheoryLesson.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(lesson, defaults)
-        self.attach_file(lesson, "attachment", file_path, relative_path, "theory/imported")
-        lesson.save()
+        file_changed = self.attach_file(lesson, "attachment", file_path, relative_path, "theory/imported")
+        if created or file_changed:
+            lesson.save()
         return created
 
     def import_document(self, file_path, relative_path, context):
@@ -229,13 +219,15 @@ class Command(BaseCommand):
             "course": None,
             "module": None,
             "uploaded_by": None,
-            "access_level": Document.AccessLevel.PUBLIC,
             "version": "imported",
         }
-        document, created = Document.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(document, defaults)
-        self.attach_file(document, "file", file_path, relative_path, "documents/imported")
-        document.save()
+        document, created = Document.objects.get_or_create(
+            slug=slug,
+            defaults={**defaults, "access_level": Document.AccessLevel.PUBLIC, "slug": slug},
+        )
+        file_changed = self.attach_file(document, "file", file_path, relative_path, "documents/imported")
+        if created or file_changed:
+            document.save()
         return created
 
     def import_simulation(self, file_path, relative_path, context):
@@ -253,11 +245,11 @@ class Command(BaseCommand):
             "published": True,
         }
         simulation, created = Simulation.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(simulation, defaults)
-        self.attach_file(simulation, "resource_file", file_path, relative_path, "simulations/imported")
+        file_changed = self.attach_file(simulation, "resource_file", file_path, relative_path, "simulations/imported")
         if file_path.suffix.lower() in self.image_extensions and not simulation.thumbnail:
-            self.attach_file(simulation, "thumbnail", file_path, relative_path, "simulations/thumbnails/imported")
-        simulation.save()
+            file_changed = self.attach_file(simulation, "thumbnail", file_path, relative_path, "simulations/thumbnails/imported") or file_changed
+        if created or file_changed:
+            simulation.save()
         return created
 
     def import_practical_assignment(self, file_path, relative_path, context):
@@ -275,9 +267,9 @@ class Command(BaseCommand):
             "published": True,
         }
         assignment, created = PracticalAssignment.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(assignment, defaults)
-        self.attach_file(assignment, "attachment", file_path, relative_path, "practical/imported")
-        assignment.save()
+        file_changed = self.attach_file(assignment, "attachment", file_path, relative_path, "practical/imported")
+        if created or file_changed:
+            assignment.save()
         return created
 
     def import_enrichment(self, file_path, relative_path, context):
@@ -302,9 +294,9 @@ class Command(BaseCommand):
             "published": True,
         }
         lesson, created = TheoryLesson.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(lesson, defaults)
-        self.attach_file(lesson, "attachment", file_path, relative_path, "theory/enrichment")
-        lesson.save()
+        file_changed = self.attach_file(lesson, "attachment", file_path, relative_path, "theory/enrichment")
+        if created or file_changed:
+            lesson.save()
         return created
 
     def import_video(self, file_path, relative_path, context, section_name="Qiziqarli fizika"):
@@ -322,9 +314,9 @@ class Command(BaseCommand):
             "published": True,
         }
         video, created = Video.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(video, defaults)
-        self.attach_file(video, "video_file", file_path, relative_path, "videos/imported")
-        video.save()
+        file_changed = self.attach_file(video, "video_file", file_path, relative_path, "videos/imported")
+        if created or file_changed:
+            video.save()
         return created
 
     def import_test_resource(self, file_path, relative_path, context):
@@ -341,9 +333,9 @@ class Command(BaseCommand):
             "published": True,
         }
         test, created = Test.objects.get_or_create(slug=slug, defaults={**defaults, "slug": slug})
-        self.apply_defaults(test, defaults)
-        self.attach_file(test, "resource_file", file_path, relative_path, "tests/imported")
-        test.save()
+        file_changed = self.attach_file(test, "resource_file", file_path, relative_path, "tests/imported")
+        if created or file_changed:
+            test.save()
         return created
 
     def get_theory_topic(self, subject, relative_path, fallback_name=None):
@@ -354,7 +346,7 @@ class Command(BaseCommand):
         else:
             topic_name = relative_path.parts[0]
         slug = self.build_slug("topic", Path(topic_name))
-        topic, created = TheoryTopic.objects.get_or_create(
+        topic, _ = TheoryTopic.objects.get_or_create(
             slug=slug,
             defaults={
                 "subject": subject,
@@ -364,16 +356,6 @@ class Command(BaseCommand):
                 "order": self.section_orders.get(relative_path.parts[0], 99),
             },
         )
-        if not created:
-            changed = False
-            if topic.subject_id != subject.id:
-                topic.subject = subject
-                changed = True
-            if not topic.summary:
-                topic.summary = f"Imported topic for {topic_name} materials."
-                changed = True
-            if changed:
-                topic.save(update_fields=["subject", "summary", "updated_at"])
         return topic
 
     def build_title(self, file_path):
@@ -423,23 +405,17 @@ class Command(BaseCommand):
             counter += 1
         return candidate
 
-    def apply_defaults(self, instance, defaults):
-        changed_fields = []
-        for field_name, value in defaults.items():
-            current = getattr(instance, field_name)
-            if current != value:
-                setattr(instance, field_name, value)
-                changed_fields.append(field_name)
-        if changed_fields:
-            instance.save(update_fields=changed_fields + ["updated_at"])
-
     def attach_file(self, instance, field_name, file_path, relative_path, prefix):
         field = getattr(instance, field_name)
-        if field and field.name:
-            return
-        storage_name = self.build_storage_name(prefix, file_path, relative_path)
+        if field and field.name and field.storage.exists(field.name):
+            return False
         with file_path.open("rb") as stream:
-            field.save(storage_name, File(stream), save=False)
+            if field and field.name:
+                field.name = field.storage.save(field.name, File(stream))
+            else:
+                storage_name = self.build_storage_name(prefix, file_path, relative_path)
+                field.save(storage_name, File(stream), save=False)
+        return True
 
     def build_storage_name(self, prefix, file_path, relative_path):
         digest = hashlib.sha1(str(relative_path).encode("utf-8")).hexdigest()[:10]

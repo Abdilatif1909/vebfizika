@@ -77,6 +77,49 @@ not need Node.js or npm. WhiteNoise serves collected files from `STATIC_ROOT`
 not included in Git. Keep a backup of the SQLite database and uploads before
 production maintenance.
 
+## Educational materials and file links
+
+Keep the source tree outside `public_html`, for example
+`/home/vebfizik/vebfizika/materiallar/`. This is the import source only; do not
+copy it to `media/materiallar/` and expect the application to discover it.
+The import command creates database records and stores managed copies through
+Django storage under `/home/vebfizik/vebfizika/media/`, using the configured
+`MEDIA_ROOT`. For example, imported Document files are stored below
+`media/documents/files/documents/imported/` and theory lesson files below
+`media/theory/attachments/theory/imported/`.
+
+The Git checkout intentionally excludes `materiallar/` and `media/`. Before
+any import, back up the production database and media directory, then run the
+read-only consistency audit:
+
+```sh
+python manage.py audit_material_files --source materiallar --fail-on-missing
+```
+
+The audit reports DB file references whose storage objects are absent and
+counts the source files. It does not import, repair, delete, or rewrite data.
+The importer is idempotent for existing records: it preserves their metadata
+and access settings, and only restores a file when its stored object is
+missing. Do not rerun imports before reviewing the audit output and backing up
+production data.
+
+Documents and theory attachments are served through
+`/api/documents/<id>/file/` and `/api/theory-lessons/<id>/file/`. These endpoints
+stream from `MEDIA_ROOT`, so those links work with `DEBUG=False` without a
+public Apache `/media/` alias. They enforce public/enrollment/teacher access;
+the frontend sends the logged-in user's API token when it opens or downloads a
+file. PDFs are inline for preview and become attachments on download. Office
+formats (`.doc`, `.docx`, `.ppt`, `.pptx`) are always attachments. Do not expose
+the whole `media/` directory from `public_html`; it also contains private
+uploads such as student submissions and avatars.
+
+After any planned production migration, verify an API response's `file` or
+`attachment` value and request the exact URL while authenticated as a user with
+access. The URL will resemble
+`https://veb-fizika.uz/api/documents/123/file/?filename=physics.ppt`; a
+missing on-disk file is returned as a readable API 404 and is also marked by
+`file_available: false` in list results.
+
 ## Verify after restart
 
 Check that the site, API, admin, and static files respond:

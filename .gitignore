@@ -39,6 +39,7 @@ __pycache__/
 *.db
 /staticfiles/
 /tmp/
+/.local/
 /media/
 /uploads/
 *.log
