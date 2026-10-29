@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>19-§. Amaliy mashg‘ulot: issiqlik muvozanati</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0F5; --surface:#FFFFFF; --ink:#16233D; --muted:#55627A; --line:#C9D4E0;
+  --cobalt:#2C56C9; --pollen:#D99A12; --teal:#1F8F84; --trace:#D43F3A; --soft:#DCE6F0;
+  --good:#1E8A4C; --bad:#C2372F;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+    --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+    --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+  --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+  --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;}
+h1,h2,h3{font-family:"Unbounded","Golos Text",system-ui,sans-serif;line-height:1.2;margin:0;}
+h1{font-size:clamp(1.6rem,4.2vw,2.6rem);font-weight:700;letter-spacing:-.01em;}
+h2{font-size:clamp(1.25rem,2.6vw,1.65rem);font-weight:700;}
+h3{font-size:1.05rem;font-weight:500;}
+p{margin:.6em 0;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+button,input,select{font:inherit;color:inherit;}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;border-radius:6px;}
+img,canvas,svg{max-width:100%;}
+
+/* hero */
+.hero{padding:36px 0 28px;}
+.crumb{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:28px;align-items:start;}
+@media (min-width:900px){.hero-grid{grid-template-columns:5fr 7fr;}}
+.lead{font-size:1.1rem;color:var(--muted);max-width:42ch;}
+.def{margin-top:20px;padding:16px 18px;border-left:5px solid var(--teal);background:var(--surface);border-radius:0 12px 12px 0;}
+.def b{color:var(--teal);}
+
+.scope{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.scope-view{position:relative;border-radius:50%/50%;overflow:hidden;}
+.stage{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--soft);}
+.stage canvas{display:block;width:100%;height:100%;}
+.stage .tag{position:absolute;left:10px;top:8px;font-size:.82rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 8px;border-radius:8px;}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin-top:12px;}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);}
+.ctl output{color:var(--ink);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--cobalt);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.btn{border:1.5px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:.93rem;}
+.btn:hover{border-color:var(--cobalt);}
+.btn[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.note{font-size:.92rem;color:var(--muted);margin-top:10px;}
+
+/* sections */
+section{padding:44px 0;border-top:1px solid var(--line);}
+.sec-head{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;}
+.sec-head .n{font-family:"Unbounded",sans-serif;color:var(--cobalt);font-size:1rem;}
+.intro{max-width:68ch;color:var(--muted);}
+
+.rules{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px;}
+@media (min-width:800px){.rules{grid-template-columns:repeat(3,1fr);}}
+.rules button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:16px 18px;border-radius:14px;background:var(--surface);border:2px solid var(--line);}
+.rules button:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;}
+.rules button[aria-selected="true"]{border-color:var(--cobalt);box-shadow:inset 0 -4px 0 var(--cobalt);}
+.rules .k{font-family:"Unbounded",sans-serif;font-size:1.6rem;color:var(--cobalt);display:block;line-height:1;margin-bottom:6px;}
+.panel{margin-top:16px;display:grid;gap:22px;grid-template-columns:1fr;align-items:center;}
+@media (min-width:860px){.panel{grid-template-columns:7fr 5fr;}}
+.panel[hidden]{display:none;}
+
+.mode{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0 6px;flex-wrap:wrap;}
+.mode button{border:0;background:transparent;padding:7px 16px;cursor:pointer;}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--bg);}
+.meter{height:12px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line);}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--pollen));transition:width .3s;}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin:10px 0;font-size:.95rem;}
+.stats b{font-size:1.25rem;font-family:"Unbounded",sans-serif;font-weight:500;}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);flex-wrap:wrap;}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+
+.force-state{font-family:"Unbounded",sans-serif;font-size:1.3rem;margin:6px 0;}
+
+/* timeline */
+.tl{list-style:none;padding:0;margin:24px 0 0;position:relative;}
+.tl::before{content:"";position:absolute;left:92px;top:6px;bottom:6px;width:2px;background:var(--line);}
+.tl li{display:grid;grid-template-columns:80px 1fr;gap:28px;padding:10px 0;position:relative;}
+.tl li::before{content:"";position:absolute;left:86px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--cobalt);}
+.tl .y{font-family:"Unbounded",sans-serif;font-size:.95rem;text-align:right;color:var(--cobalt);padding-top:6px;}
+.tl h3{margin-top:4px;}
+.tl p{margin:.2em 0 0;color:var(--muted);max-width:62ch;}
+
+/* questions */
+.qa{display:grid;gap:10px;margin-top:18px;}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+summary{cursor:pointer;font-weight:600;}
+details p{color:var(--muted);margin-bottom:0;}
+
+.quiz{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;}
+.quiz .prog{color:var(--muted);font-size:.92rem;}
+.quiz .q{font-size:1.15rem;font-weight:600;margin:8px 0 14px;}
+.opts{display:grid;gap:8px;}
+.opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);padding:11px 14px;border-radius:12px;cursor:pointer;}
+.opts button:hover:not(:disabled){border-color:var(--cobalt);}
+.opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));}
+.opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));}
+.fb{min-height:1.6em;margin-top:12px;}
+.summary-box{margin-top:30px;padding:20px 22px;border-radius:16px;background:var(--ink);color:var(--bg);}
+.summary-box h3{color:var(--bg);margin-bottom:6px;}
+.summary-box ul{margin:8px 0 0;padding-left:20px;}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;}
+.theme-toggle{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+.formula{display:inline-block;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.25rem;padding:6px 14px;border:2px solid var(--cobalt);border-radius:10px;background:var(--surface);margin:4px 0;}
+.calc{display:grid;gap:10px;}
+.calc .row{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;}
+.calc .row .lhs{font-family:"Cambria Math","Times New Roman",serif;font-size:1.15rem;color:var(--cobalt);}
+.calc .row .rhs{font-variant-numeric:tabular-nums;}
+.big{font-family:"Unbounded","Golos Text",sans-serif;font-size:1.5rem;font-weight:500;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.num{width:7.5em;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);}
+select.num{width:auto;}
+.prob{counter-reset:none;}
+.prob details p,.prob details li{color:var(--ink);}
+.prob .given{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:.95rem;}
+.prob .given>div{background:var(--bg);border-radius:10px;padding:10px 12px;}
+.prob .given b{display:block;color:var(--muted);font-weight:500;margin-bottom:2px;}
+table.t{border-collapse:collapse;width:100%;min-width:480px;}
+.tablewrap{overflow-x:auto;}
+table.t th,table.t td{border:1px solid var(--line);padding:8px 10px;text-align:left;}
+table.t th{background:var(--soft);font-weight:600;}
+table.t input{width:100%;min-width:5em;}
+.ok-t{color:var(--good);font-weight:600;}.no-t{color:var(--bad);font-weight:600;}
+.home{display:grid;gap:12px;margin-top:16px;}
+@media (min-width:800px){.home{grid-template-columns:1fr 1fr;}}
+.home > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.home ol{padding-left:20px;margin:6px 0 0;}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="crumb">Fizika, 9-sinf. II bob: Ichki energiya va termodinamika elementlari</div>
+    <div class="hero-grid">
+      <div>
+        <h1>19-§. Amaliy mashg‘ulot: jismlarda issiqlik muvozanatini o‘rganish</h1>
+        <p class="lead">Idishga issiq suv, polietilen paketga sovuq suv solamiz va paketni idishga tushiramiz. Har minutda ikkala termometr ko‘rsatkichini yozib boramiz.</p>
+        <div class="def"><b>Maqsad:</b> issiqlik muvozanatining yuzaga kelish jarayonini kuzatish.<br><b>Jihozlar:</b> idish, issiq va sovuq suv, ikkita termometr, elektron soat, polietilen paket, shtativ va ip.</div>
+        <p class="note">Virtual tajribada 1 minut taxminan 1,5 soniyada o‘tadi. Muvozanat qaror topgandan keyin ham kuzatishni bir necha minut davom ettiring: nima o‘zgaradi?</p>
+      </div>
+      <div class="scope">
+        <div class="stage" id="eqStage" style="aspect-ratio:16/11"><canvas id="eqCanvas" role="img" aria-label="Issiq suvli idish ichida sovuq suvli paket, ikki termometr va grafik"></canvas></div>
+        <div class="controls">
+          <div class="ctl"><label for="mh">Issiq suv massasi <output id="mho"></output></label><input type="range" id="mh" min="0.3" max="1" step="0.05" value="0.6"></div>
+          <div class="ctl"><label for="th">Issiq suv temperaturasi <output id="tho"></output></label><input type="range" id="th" min="50" max="90" step="1" value="70"></div>
+          <div class="ctl"><label for="mc">Sovuq suv massasi <output id="mco"></output></label><input type="range" id="mc" min="0.1" max="0.6" step="0.05" value="0.2"></div>
+          <div class="ctl"><label for="tc">Sovuq suv temperaturasi <output id="tco"></output></label><input type="range" id="tc" min="5" max="20" step="1" value="10"></div>
+        </div>
+        <div class="btns"><button class="btn primary" id="go">Paketni tushirish va soatni yoqish</button><button class="btn" id="rst">Qaytadan</button></div>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">A</span><h2>Kuzatish jadvali</h2></div>
+    <div class="tablewrap"><table class="t"><tbody>
+      <tr id="rT"><th>Kuzatilgan vaqt (minut)</th></tr>
+      <tr id="rH"><th>Issiq suv temperaturasi, °C</th></tr>
+      <tr id="rC"><th>Sovuq suv temperaturasi, °C</th></tr>
+    </tbody></table></div>
+    <div class="calc" style="margin-top:14px">
+      <div class="row"><span class="lhs">Muvozanat vaqti</span><span class="rhs" id="eqTime">—</span></div>
+      <div class="row"><span class="lhs">Muvozanat temperaturasi</span><span class="rhs" id="eqT">—</span></div>
+      <div class="row"><span class="lhs">Issiq suv ichki energiyasi o‘zgarishi</span><span class="rhs" id="dUh">—</span></div>
+      <div class="row"><span class="lhs">Sovuq suv ichki energiyasi o‘zgarishi</span><span class="rhs" id="dUc">—</span></div>
+    </div>
+    <div class="def" style="margin-top:14px"><b>Xulosa yozing:</b> issiq suv sovib, sovuq suv isidi va temperaturalar tenglashdi. Issiq suvning ichki energiyasi kamaydi, sovuq suvniki ortdi. Issiq suv bergan issiqlik sovuq suv olgan issiqlikdan biroz ko‘p chiqadi, chunki issiqlikning bir qismi atrofga ketadi. Muvozanatdan keyin ikkala termometr birga sekin pasayadi: endi suv xona havosi bilan issiqlik almashmoqda.</div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">B</span><h2>Darslikdagi savollar</h2></div>
+    <div class="qa">
+      <details><summary>1. Issiqlik almashinuvi jarayonida sovuq va issiq suvning ichki energiyasi qanday o‘zgaradi?</summary><p>Issiq suvning ichki energiyasi kamayadi (ΔU &lt; 0), sovuq suvniki ortadi (ΔU &gt; 0). Jadval ostidagi hisobga qarang.</p></details>
+      <details><summary>2. Termodinamik muvozanatdan so‘ng suvning ichki energiyasi qanday o‘zgaradi?</summary><p>Ikkala suv o‘rtasidagi issiqlik almashinuvi to‘xtaydi. Lekin suv xona havosidan issiqroq bo‘lsa, butun sistema atrofga issiqlik berib, ichki energiyasi asta-sekin kamayadi. Atrof bilan ham muvozanat qaror topgach, ichki energiya o‘zgarmay qoladi.</p></details>
+    </div>
+    <div class="quiz" id="quiz" aria-live="polite"></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Manba: “Fizika” darsligi, 9-sinf (G‘afur G‘ulom nomidagi nashriyot-matbaa ijodiy uyi, 2019), 63-bet. Modelda xona temperaturasi 22 °C, paket orqali va atrofga issiqlik uzatilishi soddalashtirilgan.</div></footer>
+
+<button class="btn theme-toggle" id="themeBtn" aria-label="Yorug‘ yoki qorong‘i rejim">◐</button>
+<script>
+(function(){
+"use strict";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let C = {};
+function readColors(){
+  const s = getComputedStyle(document.documentElement);
+  ["bg","surface","ink","muted","line","cobalt","pollen","teal","trace","soft","good","bad"].forEach(k=>C[k]=s.getPropertyValue("--"+k).trim());
+}
+readColors();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+try{const t=localStorage.getItem("fz-theme"); if(t){document.documentElement.dataset.theme=t; readColors();}}catch(e){}
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+  try{localStorage.setItem("fz-theme",r.dataset.theme);}catch(e){}
+  readColors();
+});
+const fmt=(x,d)=>x.toFixed(d).replace(".",",");
+function sci(x,d){ if(d===undefined)d=2; if(x===0||!isFinite(x)) return "0";
+  const e=Math.floor(Math.log10(Math.abs(x))); let m=x/Math.pow(10,e);
+  if(Math.abs(+m.toFixed(d))>=10){m/=10;}
+  const ee=Math.floor(Math.log10(Math.abs(x/m))+1e-9);
+  if(ee>=-2&&ee<=3) return fmt(+x.toFixed(Math.max(0,d-ee)),Math.max(0,d-ee)).replace(/,?0+$/,"").replace(/,$/,"");
+  const sup=String(ee).replace(/-/g,"⁻").replace(/\d/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[c]);
+  return fmt(m,d).replace(/,?0+$/,"")+"·10"+sup;
+}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function setupCanvas(cv){
+  const o={cv,ctx:cv.getContext("2d"),w:0,h:0};
+  function fit(){
+    const r=cv.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
+    if(r.width<2) return;
+    const ow=o.w, oh=o.h;
+    o.w=r.width; o.h=r.height; cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    o.ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(o.onResize) o.onResize(ow,oh);
+  }
+  o.fit=fit; new ResizeObserver(fit).observe(cv); fit(); return o;
+}
+function visibleLoop(el,step){
+  let vis=true,last=0;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0}).observe(el);
+  function frame(t){const dt=Math.min((t-last)/1000||0,0.04);last=t;if(vis)step(dt);requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+}
+function makeTabs(onChange){
+  const tabs=[...document.querySelectorAll('[role="tab"]')];
+  function sel(t){tabs.forEach(x=>{const on=x===t;x.setAttribute("aria-selected",on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute("aria-controls")).hidden=!on;});if(onChange)requestAnimationFrame(onChange);}
+  tabs.forEach((t,i)=>{t.tabIndex=t.getAttribute("aria-selected")==="true"?0:-1;t.addEventListener("click",()=>sel(t));
+    t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];sel(n);n.focus();}});});
+}
+function makeQuiz(box,QS){
+  const qz={i:0,score:0};
+  function render(){
+    if(qz.i>=QS.length){
+      box.innerHTML='<h3>Test yakunlandi</h3><p class="q">Natija: '+qz.score+' / '+QS.length+'</p><p>'+(qz.score===QS.length?"A’lo! Mavzuni to‘liq o‘zlashtirdingiz.":qz.score>=QS.length-2?"Yaxshi natija. Xato qilgan savollaringizga qaytib qarang.":"Mavzuni yana bir bor ko‘rib chiqing va modellar bilan tajriba qiling.")+'</p><button class="btn primary">Testni qayta ishlash</button>';
+      box.querySelector("button").onclick=()=>{qz.i=0;qz.score=0;render();};return;
+    }
+    const Q=QS[qz.i];
+    box.innerHTML='<div class="prog">Mini test: '+(qz.i+1)+'-savol, jami '+QS.length+' ta</div><div class="q">'+Q.q+'</div><div class="opts"></div><div class="fb"></div>';
+    const opts=box.querySelector(".opts"),fb=box.querySelector(".fb");
+    Q.o.forEach((t,j)=>{const b=document.createElement("button");b.innerHTML=t;b.onclick=()=>{
+      opts.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===Q.a)x.classList.add("ok");});
+      if(j===Q.a){qz.score++;fb.innerHTML='<b style="color:var(--good)">To‘g‘ri.</b> '+Q.e;}else{b.classList.add("no");fb.innerHTML='<b style="color:var(--bad)">Noto‘g‘ri.</b> '+Q.e;}
+      const n=document.createElement("button");n.className="btn primary";n.style.marginTop="12px";n.textContent=qz.i+1<QS.length?"Keyingi savol":"Natijani ko‘rish";
+      n.onclick=()=>{qz.i++;render();const f=box.querySelector("button");if(f)f.focus();};fb.appendChild(document.createElement("br"));fb.appendChild(n);
+    };opts.appendChild(b);});
+  }
+  render();
+}
+/* jadval tekshirish: <input data-ans="28" data-tol="0.5"> */
+function makeCheckTable(btn,out){
+  btn.addEventListener("click",()=>{
+    const ins=[...document.querySelectorAll(btn.dataset.target.split(",").map(s=>s.trim()+" input").join(","))];let ok=0;
+    ins.forEach(i=>{const v=parseFloat(i.value.replace(",",".").replace(/\s/g,""));const a=+i.dataset.ans,tol=+(i.dataset.tol||0.01*Math.abs(a));
+      const good=isFinite(v)&&Math.abs(v-a)<=tol;if(good)ok++;i.style.borderColor=good?"var(--good)":"var(--bad)";});
+    out.textContent=ok+" / "+ins.length+" ta katak to‘g‘ri."+(ok<ins.length?" Qizil kataklarni qayta tekshiring.":" Barakalla!");
+  });
+}
+function parseNum(v){
+  let s=String(v).trim().replace(/\s/g,"").replace(/,/g,".").replace(/−/g,"-");
+  s=s.replace(/[·*x×]10\^?/i,"e").replace(/⁻/g,"-").replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(c));
+  if(/^10\^?-?\d+$/.test(s)) s="1e"+s.replace(/^10\^?/,"");
+  return s===""?NaN:Number(s);
+}
+/* masalalar: {q, ans, unit, tol(nisbiy), sol, hint} */
+function makeProblems(box,list){
+  list.forEach((p,i)=>{
+    const d=document.createElement("details");
+    const hasAns=p.ans!==undefined;
+    d.innerHTML='<summary>'+p.q+'</summary>'+
+      (hasAns?'<div class="btns" style="align-items:center"><label class="sr" for="pa'+box.id+i+'">Javob</label><input class="num" id="pa'+box.id+i+'" placeholder="javob"> <span>'+(p.unit||"")+'</span><button class="btn">Tekshirish</button>'+(p.hint?'<button class="btn">Maslahat</button>':'')+'<button class="btn">Yechimni ko‘rish</button></div><p class="fbk" aria-live="polite"></p>':'')+
+      '<div class="sol"'+(hasAns?' hidden':'')+'><p>'+p.sol+'</p></div>';
+    box.appendChild(d);
+    if(!hasAns) return;
+    const inp=d.querySelector("input"),bs=d.querySelectorAll(".btns button"),fb=d.querySelector(".fbk"),sol=d.querySelector(".sol");
+    const check=()=>{const v=parseNum(inp.value);const tol=p.tol||0.03;
+      if(!isFinite(v)){fb.innerHTML='<span class="no-t">Son kiriting.</span> Katta sonlarni 4,8e22 ko‘rinishida yozing.';return;}
+      const ok=Math.abs(v-p.ans)<=Math.abs(p.ans)*tol+(p.abs||0);
+      fb.innerHTML=ok?'<span class="ok-t">To‘g‘ri!</span>':'<span class="no-t">Hali to‘g‘ri emas.</span> Birliklarni XBS ga o‘tkazganingizni tekshiring.';
+      inp.style.borderColor=ok?"var(--good)":"var(--bad)"; if(ok) sol.hidden=false;};
+    bs[0].onclick=check; inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    if(p.hint){bs[1].onclick=()=>{fb.innerHTML="Maslahat: "+p.hint;};}
+    bs[bs.length-1].onclick=()=>{sol.hidden=false;};
+  });
+}
+
+
+const cw=4200,K=cw*0.12,Lo=cw*0.005,Troom=22,SPM=1.5;
+const ids=["mh","th","mc","tc"],el=Object.fromEntries(ids.map(i=>[i,document.getElementById(i)]));
+let run=null;
+function P(){return{mh:+el.mh.value,th:+el.th.value,mc:+el.mc.value,tc:+el.tc.value};}
+function lab(){document.getElementById("mho").textContent=fmt(+el.mh.value,2)+" kg";document.getElementById("tho").textContent=el.th.value+" °C";document.getElementById("mco").textContent=fmt(+el.mc.value,2)+" kg";document.getElementById("tco").textContent=el.tc.value+" °C";}
+ids.forEach(i=>el[i].oninput=lab);lab();
+function clearTable(){["rT","rH","rC"].forEach(r=>{const tr=document.getElementById(r);while(tr.children.length>1)tr.removeChild(tr.lastChild);});["eqTime","eqT","dUh","dUc"].forEach(i=>document.getElementById(i).textContent="—");}
+function addCol(m,h,c){[["rT",m],["rH",fmt(h,1)],["rC",fmt(c,1)]].forEach(([r,v])=>{const td=document.createElement("td");td.textContent=v;document.getElementById(r).appendChild(td);});}
+document.getElementById("go").onclick=()=>{const p=P();run={p,Th:p.th,Tc:p.tc,min:0,rec:0,hist:[[0,p.th,p.tc]],eq:null};clearTable();addCol(0,p.th,p.tc);ids.forEach(i=>el[i].disabled=true);document.getElementById("go").disabled=true;};
+document.getElementById("rst").onclick=()=>{run=null;clearTable();ids.forEach(i=>el[i].disabled=false);document.getElementById("go").disabled=false;};
+function step(dt){if(!run||run.min>=20)return;const dm=dt/SPM,p=run.p,sub=10;
+  for(let i=0;i<sub;i++){const h=dm/sub,q=K*(run.Th-run.Tc)*h;run.Th+=(-q-Lo*(run.Th-Troom)*h)/(cw*p.mh);run.Tc+=(q-Lo*0.3*(run.Tc-Troom)*h)/(cw*p.mc);}
+  run.min+=dm;run.hist.push([run.min,run.Th,run.Tc]);
+  if(!run.eq&&run.Th-run.Tc<0.5){run.eq={m:run.min,t:(run.Th+run.Tc)/2};document.getElementById("eqTime").textContent="≈ "+fmt(run.min,1)+" minut";document.getElementById("eqT").textContent="≈ "+fmt(run.eq.t,1)+" °C";
+    document.getElementById("dUh").innerHTML="ΔU = cm(t − t_issiq) = "+fmt(cw*p.mh*(run.eq.t-p.th)/1000,1)+" kJ (kamaydi)";document.getElementById("dUc").innerHTML="ΔU = cm(t − t_sovuq) = +"+fmt(cw*p.mc*(run.eq.t-p.tc)/1000,1)+" kJ (ortdi)";}
+  while(run.rec+1<=run.min&&run.rec<20){run.rec++;addCol(run.rec,run.Th,run.Tc);}}
+const EC=setupCanvas(document.getElementById("eqCanvas"));let tt=0;
+function col(t){const x=Math.max(0,Math.min(1,t/90));return "rgba("+Math.round(70+180*x)+","+Math.round(130-60*x)+","+Math.round(230-180*x)+",.7)";}
+function draw(dt){tt+=dt;const c=EC.ctx,w=EC.w,h=EC.h;if(!w)return;c.fillStyle=C.soft;c.fillRect(0,0,w,h);c.font="12px 'Golos Text',system-ui,sans-serif";
+  const p=run?run.p:P(),Th=run?run.Th:p.th,Tc=run?run.Tc:p.tc;
+  // shtativ
+  c.fillStyle=C.muted;c.fillRect(w*0.02,h*0.06,5,h*0.86);c.fillRect(w*0.02,h*0.06,w*0.3,4);c.fillRect(0,h*0.92,w*0.42,6);
+  const vx=w*0.06,vw=w*0.32,vy=h*0.4,vh=h*0.5;c.fillStyle=col(Th);c.fillRect(vx,vy+vh*0.15,vw,vh*0.85);c.strokeStyle=C.ink;c.lineWidth=2;c.strokeRect(vx,vy,vw,vh);
+  const drop=run?Math.min(1,run.min*2):0,bx=vx+vw*0.5,bw=vw*0.36,bh=vh*0.5,by=h*0.1+drop*(vy+vh*0.35-h*0.1);
+  c.fillStyle=col(Tc);c.beginPath();c.ellipse(bx,by+bh*0.55,bw/2,bh/2,0,0,6.283);c.fill();c.strokeStyle="rgba(255,255,255,.9)";c.stroke();
+  c.strokeStyle=C.ink;c.lineWidth=1;c.beginPath();c.moveTo(bx,h*0.07);c.lineTo(bx,by+bh*0.1);c.stroke();
+  [[vx+vw*0.18,vy-30,Th,"issiq"],[bx+bw*0.15,by-10,Tc,"sovuq"]].forEach(([x,y,T,l])=>{c.fillStyle=C.surface;c.fillRect(x-3,y,6,vh*0.75);c.strokeStyle=C.ink;c.strokeRect(x-3,y,6,vh*0.75);const f=Math.max(0,Math.min(1,T/100));c.fillStyle=C.trace;c.fillRect(x-1.5,y+vh*0.75*(1-f),3,vh*0.75*f);});
+  c.fillStyle=C.ink;c.fillText("issiq: "+fmt(Th,1)+" °C",vx,vy+vh+16);c.fillText("sovuq: "+fmt(Tc,1)+" °C",vx+vw*0.55,vy+vh+16);
+  c.fillText("⏱ "+(run?fmt(run.min,1):"0,0")+" min",w*0.3,h*0.05+10);
+  // grafik
+  const gx=w*0.5,gy=h*0.08,gw=w*0.47,gh=h*0.8,X=m=>gx+m/20*gw,Y=t=>gy+gh-t/100*gh;
+  c.strokeStyle=C.line;c.strokeRect(gx,gy,gw,gh);c.fillStyle=C.muted;[0,20,40,60,80,100].forEach(v=>c.fillText(String(v),gx-20,Y(v)+4));[0,5,10,15,20].forEach(m=>c.fillText(String(m),X(m)-4,gy+gh+14));c.fillText("t, °C",gx+4,gy-2);c.fillText("min",gx+gw-24,gy+gh-4);
+  c.setLineDash([3,3]);c.strokeStyle=C.muted;c.beginPath();c.moveTo(gx,Y(Troom));c.lineTo(gx+gw,Y(Troom));c.stroke();c.setLineDash([]);c.fillText("xona 22 °C",gx+gw-70,Y(Troom)-4);
+  if(run){[[1,C.trace],[2,C.cobalt]].forEach(([k,cl])=>{c.strokeStyle=cl;c.lineWidth=2.5;c.beginPath();run.hist.forEach((q,i)=>i?c.lineTo(X(q[0]),Y(q[k])):c.moveTo(X(q[0]),Y(q[k])));c.stroke();});
+    if(run.eq){c.fillStyle=C.good;c.beginPath();c.arc(X(run.eq.m),Y(run.eq.t),6,0,6.283);c.fill();c.fillText("muvozanat",X(run.eq.m)+8,Y(run.eq.t)-8);}}}
+visibleLoop(document.getElementById("eqStage"),dt=>{step(dt);draw(dt);});
+makeQuiz(document.getElementById("quiz"),[
+ {q:"Issiqlik muvozanatida nima tenglashadi?",o:["Massalar","Hajmlar","Temperaturalar","Ichki energiyalar"],a:2,e:"Temperaturalar tenglashadi; ichki energiyalar massaga qarab har xil bo‘lishi mumkin."},
+ {q:"Issiq suvning ichki energiyasi issiqlik almashinuvida:",o:["Ortadi","Kamayadi","O‘zgarmaydi","Avval ortib, keyin kamayadi"],a:1,e:"U issiqlik beradi."},
+ {q:"Sovuq suv massasini oshirsak, muvozanat temperaturasi:",o:["Pastroq bo‘ladi","Yuqoriroq bo‘ladi","O‘zgarmaydi","Issiq suv temperaturasiga teng bo‘ladi"],a:0,e:"Ko‘proq sovuq suvni isitish kerak. Modelda sinab ko‘ring."}
+]);
+
+})();
+</script>
+</body>
+</html>

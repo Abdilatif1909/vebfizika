@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1-§. Modda tuzilishining molekulyar-kinetik nazariyasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0F5; --surface:#FFFFFF; --ink:#16233D; --muted:#55627A; --line:#C9D4E0;
+  --cobalt:#2C56C9; --pollen:#D99A12; --teal:#1F8F84; --trace:#D43F3A; --soft:#DCE6F0;
+  --good:#1E8A4C; --bad:#C2372F;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+    --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+    --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+  --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+  --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;}
+h1,h2,h3{font-family:"Unbounded","Golos Text",system-ui,sans-serif;line-height:1.2;margin:0;}
+h1{font-size:clamp(1.6rem,4.2vw,2.6rem);font-weight:700;letter-spacing:-.01em;}
+h2{font-size:clamp(1.25rem,2.6vw,1.65rem);font-weight:700;}
+h3{font-size:1.05rem;font-weight:500;}
+p{margin:.6em 0;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+button,input,select{font:inherit;color:inherit;}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;border-radius:6px;}
+img,canvas,svg{max-width:100%;}
+
+/* hero */
+.hero{padding:36px 0 28px;}
+.crumb{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:28px;align-items:start;}
+@media (min-width:900px){.hero-grid{grid-template-columns:5fr 7fr;}}
+.lead{font-size:1.1rem;color:var(--muted);max-width:42ch;}
+.def{margin-top:20px;padding:16px 18px;border-left:5px solid var(--teal);background:var(--surface);border-radius:0 12px 12px 0;}
+.def b{color:var(--teal);}
+
+.scope{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.scope-view{position:relative;border-radius:50%/50%;overflow:hidden;}
+.stage{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--soft);}
+.stage canvas{display:block;width:100%;height:100%;}
+.stage .tag{position:absolute;left:10px;top:8px;font-size:.82rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 8px;border-radius:8px;}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin-top:12px;}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);}
+.ctl output{color:var(--ink);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--cobalt);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.btn{border:1.5px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:.93rem;}
+.btn:hover{border-color:var(--cobalt);}
+.btn[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.note{font-size:.92rem;color:var(--muted);margin-top:10px;}
+
+/* sections */
+section{padding:44px 0;border-top:1px solid var(--line);}
+.sec-head{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;}
+.sec-head .n{font-family:"Unbounded",sans-serif;color:var(--cobalt);font-size:1rem;}
+.intro{max-width:68ch;color:var(--muted);}
+
+.rules{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px;}
+@media (min-width:800px){.rules{grid-template-columns:repeat(3,1fr);}}
+.rules button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:16px 18px;border-radius:14px;background:var(--surface);border:2px solid var(--line);}
+.rules button:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;}
+.rules button[aria-selected="true"]{border-color:var(--cobalt);box-shadow:inset 0 -4px 0 var(--cobalt);}
+.rules .k{font-family:"Unbounded",sans-serif;font-size:1.6rem;color:var(--cobalt);display:block;line-height:1;margin-bottom:6px;}
+.panel{margin-top:16px;display:grid;gap:22px;grid-template-columns:1fr;align-items:center;}
+@media (min-width:860px){.panel{grid-template-columns:7fr 5fr;}}
+.panel[hidden]{display:none;}
+
+.mode{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0 6px;flex-wrap:wrap;}
+.mode button{border:0;background:transparent;padding:7px 16px;cursor:pointer;}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--bg);}
+.meter{height:12px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line);}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--pollen));transition:width .3s;}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin:10px 0;font-size:.95rem;}
+.stats b{font-size:1.25rem;font-family:"Unbounded",sans-serif;font-weight:500;}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);flex-wrap:wrap;}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+
+.force-state{font-family:"Unbounded",sans-serif;font-size:1.3rem;margin:6px 0;}
+
+/* timeline */
+.tl{list-style:none;padding:0;margin:24px 0 0;position:relative;}
+.tl::before{content:"";position:absolute;left:92px;top:6px;bottom:6px;width:2px;background:var(--line);}
+.tl li{display:grid;grid-template-columns:80px 1fr;gap:28px;padding:10px 0;position:relative;}
+.tl li::before{content:"";position:absolute;left:86px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--cobalt);}
+.tl .y{font-family:"Unbounded",sans-serif;font-size:.95rem;text-align:right;color:var(--cobalt);padding-top:6px;}
+.tl h3{margin-top:4px;}
+.tl p{margin:.2em 0 0;color:var(--muted);max-width:62ch;}
+
+/* questions */
+.qa{display:grid;gap:10px;margin-top:18px;}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+summary{cursor:pointer;font-weight:600;}
+details p{color:var(--muted);margin-bottom:0;}
+
+.quiz{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;}
+.quiz .prog{color:var(--muted);font-size:.92rem;}
+.quiz .q{font-size:1.15rem;font-weight:600;margin:8px 0 14px;}
+.opts{display:grid;gap:8px;}
+.opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);padding:11px 14px;border-radius:12px;cursor:pointer;}
+.opts button:hover:not(:disabled){border-color:var(--cobalt);}
+.opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));}
+.opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));}
+.fb{min-height:1.6em;margin-top:12px;}
+.summary-box{margin-top:30px;padding:20px 22px;border-radius:16px;background:var(--ink);color:var(--bg);}
+.summary-box h3{color:var(--bg);margin-bottom:6px;}
+.summary-box ul{margin:8px 0 0;padding-left:20px;}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;}
+.theme-toggle{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="crumb">Fizika, 9-sinf. I bob: Modda tuzilishining molekulyar-kinetik nazariyasi asoslari</div>
+    <div class="hero-grid">
+      <div>
+        <h1>1-§. Modda tuzilishining molekulyar-kinetik nazariyasi</h1>
+        <p class="lead">Suvda suzib yurgan gul changi nega to‘xtamay titraydi? O‘ng tomondagi “mikroskop”da buni o‘zingiz tekshiring.</p>
+        <div class="def">
+          <b>Molekulyar-kinetik nazariya (MKN)</b> moddaning tuzilishi va xossalarini uni tashkil qilgan molekulalarning harakatiga hamda molekulalar orasidagi o‘zaro ta’sir kuchlariga bog‘lab o‘rganadi.
+        </div>
+        <p class="note">Tajriba: avval “Molekulalarni ko‘rsatish” tugmasini o‘chirib, faqat Broun zarrasini kuzating. Keyin yoqib, zarrani nima turtayotganini ko‘ring.</p>
+      </div>
+
+      <div class="scope">
+        <div class="stage" id="brStage">
+          <canvas id="brCanvas" aria-label="Broun harakati modeli: katta zarra mayda molekulalar urilishidan tartibsiz harakatlanadi" role="img"></canvas>
+          <span class="tag" id="brTag">Broun harakati modeli</span>
+        </div>
+        <div class="controls">
+          <div class="ctl">
+            <label for="brT">Harorat <output id="brTo">2</output></label>
+            <input type="range" id="brT" min="1" max="5" step="0.5" value="2">
+          </div>
+          <div class="ctl">
+            <label for="brR">Broun zarrasining o‘lchami <output id="brRo">22</output></label>
+            <input type="range" id="brR" min="10" max="44" step="2" value="22">
+          </div>
+        </div>
+        <div class="btns">
+          <button class="btn" id="brMol" aria-pressed="true">Molekulalarni ko‘rsatish</button>
+          <button class="btn" id="brTrace" aria-pressed="true">Traektoriya izi</button>
+          <button class="btn" id="brClear">Izni tozalash</button>
+          <button class="btn primary" id="brPlay">To‘xtatish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="qoidalar">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">A</span><h2>MKN ning uchta asosiy qoidasi</h2></div>
+    <p class="intro">Bu qoidalar tajribalarda isbotlangan. Har bir qoidani bosing va uning modelini sinab ko‘ring.</p>
+
+    <ol class="rules" role="tablist" aria-label="MKN qoidalari">
+      <li><button role="tab" aria-selected="true" aria-controls="p1" id="t1"><span class="k">1</span>Moddalar zarralardan, ya’ni atom va molekulalardan tashkil topgan.</button></li>
+      <li><button role="tab" aria-selected="false" aria-controls="p2" id="t2"><span class="k">2</span>Atom va molekulalar to‘xtovsiz va tartibsiz harakat qiladi.</button></li>
+      <li><button role="tab" aria-selected="false" aria-controls="p3" id="t3"><span class="k">3</span>Atom va molekulalar orasida o‘zaro tortishish va itarilish kuchlari mavjud.</button></li>
+    </ol>
+
+    <div class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
+      <div>
+        <div class="stage"><canvas id="zmCanvas" role="img" aria-label="Suv tomchisini kattalashtirish modeli"></canvas><span class="tag" id="zmTag">Masshtab: 1 mm</span></div>
+        <div class="ctl" style="margin-top:12px">
+          <label for="zm">Kattalashtirish <output id="zmo">1×</output></label>
+          <input type="range" id="zm" min="0" max="100" value="0">
+        </div>
+      </div>
+      <div>
+        <h3>Suv tomchisining ichiga qarang</h3>
+        <p>Oddiy ko‘zga suv tomchisi yaxlit, uzluksiz modda bo‘lib ko‘rinadi. Uni million marta va undan ham ko‘proq kattalashtirsak, u alohida-alohida suv molekulalaridan (H₂O) iborat ekani ko‘rinadi.</p>
+        <p>Bu fikrni birinchi bo‘lib miloddan avvalgi V–IV asrlarda yunon faylasufi <b>Demokrit</b> aytgan: barcha moddalar juda kichik zarralardan tashkil topgan.</p>
+        <p class="note">Diqqat: molekulalar kattalashtirilganda ham to‘xtab turmaydi, ular doim tebranib turadi. Bu ikkinchi qoidaga ishora.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+      <div>
+        <div class="mode" role="group" aria-label="Modda holati">
+          <button aria-pressed="true" data-m="gas">Gaz: atir hidi</button>
+          <button aria-pressed="false" data-m="liq">Suyuqlik: suv va sut</button>
+          <button aria-pressed="false" data-m="sol">Qattiq: oltin va qo‘rg‘oshin</button>
+        </div>
+        <div class="stage"><canvas id="dfCanvas" role="img" aria-label="Diffuziya modeli: ikki xil moddaning aralashishi"></canvas><span class="tag" id="dfTag">To‘siq hali turibdi</span></div>
+        <div class="btns">
+          <button class="btn primary" id="dfGo">To‘siqni olib tashlash</button>
+          <button class="btn" id="dfReset">Qaytadan</button>
+        </div>
+      </div>
+      <div>
+        <h3>Diffuziya: moddalarning o‘z-o‘zidan aralashishi</h3>
+        <div class="legend" id="dfLegend"></div>
+        <div class="stats">
+          <div>Vaqt<br><b id="dfTime">0,0 s</b></div>
+          <div>Aralashish<br><b id="dfMix">0%</b></div>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="dfBar"></i></div>
+        <div class="ctl" style="margin-top:14px">
+          <label for="dfT">Harorat <output id="dfTo">2</output></label>
+          <input type="range" id="dfT" min="1" max="5" step="0.5" value="2">
+        </div>
+        <p id="dfText"></p>
+      </div>
+    </div>
+
+    <div class="panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+      <div>
+        <div class="stage" style="aspect-ratio:16/10"><canvas id="fcCanvas" role="img" aria-label="Ikki molekula orasidagi o‘zaro ta’sir kuchi grafigi"></canvas></div>
+        <div class="ctl" style="margin-top:12px">
+          <label for="fc">Molekulalar orasidagi masofa <output id="fco">1,50 r₀</output></label>
+          <input type="range" id="fc" min="0.88" max="3" step="0.01" value="1.5">
+        </div>
+      </div>
+      <div>
+        <h3>Ikki molekulani yaqinlashtiring</h3>
+        <div class="force-state" id="fcState">Tortishish</div>
+        <p id="fcText"></p>
+        <p class="note">r₀ — kuchlar muvozanatlashadigan masofa. Molekulalar juda yaqinlashsa, itarilish keskin ortadi; uzoqlashsa, tortishish juda tez kamayib ketadi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="broun">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">B</span><h2>Broun harakati nima uchun yuzaga keladi?</h2></div>
+    <p class="intro">Muallaq zarra 1 mikrometrdan katta bo‘lsa, unga har tomondan urilayotgan molekulalar soni deyarli teng, zarb kuchlari bir-birini muvozanatlaydi. Zarra 1 nanometr atrofida bo‘lsa, bir tomondan urilayotgan molekulalar soni boshqa tomondagidan sezilarli farq qiladi va natijaviy kuch zarrani harakatlantiradi.</p>
+    <div class="panel" style="grid-template-columns:1fr">
+      <div class="btns" style="margin-top:0">
+        <button class="btn" data-preset="small">Kichik zarra va issiq suv</button>
+        <button class="btn" data-preset="big">Katta zarra va sovuq suv</button>
+        <button class="btn" data-preset="perrin">Perren tajribasi: faqat zarrani kuzatish</button>
+      </div>
+      <p class="note">Tugmalar sahifa boshidagi mikroskop modelini sozlaydi. Natijani ko‘rish uchun yuqoriga qayting.</p>
+    </div>
+    <div class="summary-box">
+      <h3>Esda tuting</h3>
+      <ul>
+        <li>Broun harakati to‘xtovsiz va tartibsiz harakatdan iborat.</li>
+        <li>Broun harakatining traektoriyasi murakkab siniq chiziqlardan iborat.</li>
+        <li>Broun harakati zarraning o‘lchamiga bog‘liq: zarra qancha kichik bo‘lsa, shuncha kuchli turtiladi.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="tarix">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">C</span><h2>G‘oyadan isbotgacha</h2></div>
+    <ol class="tl">
+      <li><div class="y">m.a. V–IV asr</div><div><h3>Demokrit</h3><p>Barcha moddalar juda kichik, bo‘linmas zarralardan tashkil topgan, degan g‘oyani ilgari surdi.</p></div></li>
+      <li><div class="y">XVIII asr</div><div><h3>MKN ilmiy nazariyaga aylanadi</h3><p>M. V. Lomonosov, D. I. Mendeleyev, J. Dalton, J. Maksvell, O. Shtern, L. Bolsman, A. Avogadro va boshqa olimlar nazariyani rivojlantirdi.</p></div></li>
+      <li><div class="y">1827</div><div><h3>Robert Broun</h3><p>Ingliz botanigi suv ustidagi gul changining to‘xtovsiz va tartibsiz harakatini mikroskopda kuzatdi.</p></div></li>
+      <li><div class="y">1905</div><div><h3>Albert Eynshteyn</h3><p>Broun harakatining molekulyar-kinetik nazariyasini yaratdi: changni suv molekulalari uzluksiz va tartibsiz urib turadi.</p></div></li>
+      <li><div class="y">1926</div><div><h3>Jan Perren</h3><p>Broun zarrasining holatini teng vaqt oraliqlarida suratga olib, traektoriyasi siniq chiziqlardan iboratligini ko‘rsatdi. Moddaning molekulalardan tuzilganini isbotlagani uchun Nobel mukofotini oldi.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section id="savollar">
+  <div class="wrap">
+    <div class="sec-head"><span class="n">D</span><h2>Darslikdagi savollar</h2></div>
+    <p class="intro">Avval o‘zingiz javob berib ko‘ring, keyin savolni bosib tekshiring.</p>
+    <div class="qa">
+      <details><summary>1. Qanday tajribalar modda tuzilishining MKN asosiy qoidalarini tasdiqlaydi?</summary>
+        <p>Atir hidining xonaga tarqalishi, suv va sutning o‘z-o‘zidan aralashishi, oltin va qo‘rg‘oshin atomlarining besh yilda bir-biriga taxminan 1 mm kirib borishi (diffuziya), shuningdek suvdagi gul changining Broun harakati.</p></details>
+      <details><summary>2. Broun harakatining yuzaga kelish sababini tushuntirib bering.</summary>
+        <p>Suyuqlikdagi kichik zarraga turli tomondan urilayotgan molekulalar soni har lahzada bir xil bo‘lmaydi. Zarb kuchlari muvozanatlashmaydi, natijaviy kuch zarrani goh u, goh bu tomonga turtadi. Shuning uchun zarra siniq chiziq bo‘ylab tartibsiz harakatlanadi.</p></details>
+      <details><summary>3. Nima uchun ikkiga bo‘lingan plastilinni biriktirish mumkin, qalam bo‘laklarini esa yo‘q?</summary>
+        <p>Plastilin yumshoq: bo‘laklarni bossak, sirtlar butunlay tegib, molekulalar tortishish kuchi ta’sir qiladigan juda kichik masofagacha yaqinlashadi. Qalam bo‘laklari qattiq va sirtlari notekis, ular faqat bir necha nuqtada tegadi. Ko‘pchilik molekulalar orasidagi masofa katta qoladi, tortishish kuchi esa masofa ortishi bilan juda tez kamayadi.</p></details>
+      <details><summary>4. Qattiq jismlarning zarralari ham harakat qilsa, nega ular sochilib ketmaydi?</summary>
+        <p>Qattiq jismlarda zarralar bir-biriga juda yaqin joylashgan va ular orasidagi o‘zaro ta’sir kuchlari kuchli. Zarralar o‘z muvozanat vaziyatlari atrofida tebranadi, lekin uzoqqa keta olmaydi.</p></details>
+    </div>
+
+    <div class="quiz" id="quiz" aria-live="polite"></div>
+
+    <h3 style="margin-top:30px">Uyda bajaring</h3>
+    <div class="qa">
+      <details><summary>Broun harakatini kuzatish</summary><p>Kechasi xonadagi chiroqni o‘chirib, fonar yordamida nur shu’lasini hosil qiling. Biror gazlama matonini nur yo‘liga silkiting. Yorug‘lik nurida havodagi chang zarralarining to‘xtovsiz va tartibsiz harakatini kuzating va xulosangizni yozing.</p></details>
+      <details><summary>Mexanik model: molekulalarning tartibsiz harakati</summary><p><b>Jihozlar:</b> oq va qora rangdagi sharchalar (taxminan 20 tadan), tarelka, flomaster. Tarelka asosini flomaster bilan teng ikkiga ajrating. Bir yarmiga oq, ikkinchisiga qora sharchalarni soling. Tarelkani silkitib, sharchalarning joylashuvini kuzating va xulosa yozing. Bu tajriba sahifadagi diffuziya modeliga o‘xshaydi: oq va qora sharchalar asta-sekin aralashib ketadi.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">Manba: “Fizika” darsligi, 9-sinf (G‘afur G‘ulom nomidagi nashriyot-matbaa ijodiy uyi, 2019), 4–7-betlar. Modellar soddalashtirilgan va o‘quv maqsadida yaratilgan.</div></footer>
+
+<button class="btn theme-toggle" id="themeBtn" aria-label="Yorug‘ yoki qorong‘i rejim">◐</button>
+
+<script>
+(function(){
+"use strict";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let C = {};
+function readColors(){
+  const s = getComputedStyle(document.documentElement);
+  ["bg","surface","ink","muted","line","cobalt","pollen","teal","trace","soft"].forEach(k=>C[k]=s.getPropertyValue("--"+k).trim());
+}
+readColors();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+  try{localStorage.setItem("fz-theme",r.dataset.theme);}catch(e){}
+  readColors();
+});
+try{const t=localStorage.getItem("fz-theme"); if(t){document.documentElement.dataset.theme=t; readColors();}}catch(e){}
+
+const fmt = (x,d)=>x.toFixed(d).replace(".",",");
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function setupCanvas(cv){
+  const o={cv,ctx:cv.getContext("2d"),w:0,h:0};
+  function fit(){
+    const r=cv.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
+    if(r.width<2) return;
+    const ow=o.w, oh=o.h;
+    o.w=r.width; o.h=r.height; cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    o.ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(o.onResize) o.onResize(ow,oh);
+  }
+  o.fit=fit;
+  new ResizeObserver(fit).observe(cv);
+  fit();
+  return o;
+}
+function visibleLoop(el,step){
+  let vis=true, last=0, run=true;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0}).observe(el);
+  function frame(t){
+    const dt=Math.min((t-last)/1000||0,0.04); last=t;
+    if(vis) step(dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Broun harakati ---------- */
+const BR = setupCanvas(document.getElementById("brCanvas"));
+const br = {T:2,R:22,showMol:true,trace:true,playing:!reduce,mol:[],p:null,trail:[],acc:0};
+function brInit(){
+  const area=BR.w*BR.h; const N=Math.max(160,Math.min(650,Math.round(area/420)));
+  br.mol=[]; const v0=90*Math.sqrt(br.T);
+  for(let i=0;i<N;i++){
+    let x,y; do{x=Math.random()*BR.w;y=Math.random()*BR.h;}while(br.p && Math.hypot(x-br.p.x,y-br.p.y)<br.R+6);
+    br.mol.push({x,y,vx:gauss()*v0,vy:gauss()*v0});
+  }
+}
+function brReset(){br.p={x:BR.w/2,y:BR.h/2,vx:gauss()*12,vy:gauss()*12}; br.trail=[{x:br.p.x,y:br.p.y}]; brInit();}
+BR.onResize=(ow,oh)=>{
+  if(!br.p){brReset();return;}
+  const sx=BR.w/(ow||BR.w), sy=BR.h/(oh||BR.h);
+  br.mol.forEach(m=>{m.x*=sx;m.y*=sy;}); br.p.x*=sx; br.p.y*=sy; br.trail.forEach(q=>{q.x*=sx;q.y*=sy;});
+  brDraw();
+};
+if(BR.w) brReset();
+function setTemp(T){
+  const k=Math.sqrt(T/br.T); br.mol.forEach(m=>{m.vx*=k;m.vy*=k;}); br.p.vx*=k; br.p.vy*=k; br.T=T;
+}
+function brStep(dt){
+  const r=3, R=br.R, M=1.6*(R/3)*(R/3), m=1;
+  const sub=3, h=dt/sub, p=br.p;
+  for(let s=0;s<sub;s++){
+    p.x+=p.vx*h; p.y+=p.vy*h;
+    if(p.x<R){p.x=R;p.vx=Math.abs(p.vx);} if(p.x>BR.w-R){p.x=BR.w-R;p.vx=-Math.abs(p.vx);}
+    if(p.y<R){p.y=R;p.vy=Math.abs(p.vy);} if(p.y>BR.h-R){p.y=BR.h-R;p.vy=-Math.abs(p.vy);}
+    for(const q of br.mol){
+      q.x+=q.vx*h; q.y+=q.vy*h;
+      if(q.x<r){q.x=r;q.vx=Math.abs(q.vx);} else if(q.x>BR.w-r){q.x=BR.w-r;q.vx=-Math.abs(q.vx);}
+      if(q.y<r){q.y=r;q.vy=Math.abs(q.vy);} else if(q.y>BR.h-r){q.y=BR.h-r;q.vy=-Math.abs(q.vy);}
+      const dx=q.x-p.x, dy=q.y-p.y, d2=dx*dx+dy*dy, rr=R+r;
+      if(d2<rr*rr && d2>0){
+        const d=Math.sqrt(d2), nx=dx/d, ny=dy/d;
+        const vrel=(q.vx-p.vx)*nx+(q.vy-p.vy)*ny;
+        if(vrel<0){
+          const a=2*vrel/(m+M);
+          q.vx-=a*M*nx; q.vy-=a*M*ny; p.vx+=a*m*nx; p.vy+=a*m*ny;
+        }
+        q.x=p.x+nx*rr; q.y=p.y+ny*rr;
+      }
+    }
+  }
+  br.acc+=dt;
+  if(br.acc>0.4){br.acc=0; br.trail.push({x:p.x,y:p.y}); if(br.trail.length>260) br.trail.shift();}
+}
+function brDraw(){
+  const c=BR.ctx, w=BR.w, h=BR.h; if(!w) return;
+  c.fillStyle=C.soft; c.fillRect(0,0,w,h);
+  if(br.trace && br.trail.length>1){
+    c.strokeStyle=C.trace; c.lineWidth=1.8; c.lineJoin="round"; c.beginPath();
+    br.trail.forEach((q,i)=>i?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y)); c.lineTo(br.p.x,br.p.y); c.stroke();
+    c.fillStyle=C.trace; br.trail.forEach(q=>{c.beginPath();c.arc(q.x,q.y,2.2,0,6.283);c.fill();});
+  }
+  if(br.showMol){
+    c.fillStyle=C.cobalt;
+    for(const q of br.mol){c.beginPath();c.arc(q.x,q.y,3,0,6.283);c.fill();}
+  }
+  const p=br.p;
+  const g=c.createRadialGradient(p.x-br.R*.35,p.y-br.R*.35,br.R*.1,p.x,p.y,br.R);
+  g.addColorStop(0,"#FFE9A8"); g.addColorStop(1,C.pollen);
+  c.fillStyle=g; c.beginPath(); c.arc(p.x,p.y,br.R,0,6.283); c.fill();
+  c.strokeStyle="rgba(120,80,0,.45)"; c.lineWidth=1.5; c.stroke();
+}
+visibleLoop(document.getElementById("brStage"),dt=>{ if(br.playing) brStep(dt); brDraw(); });
+
+const brT=document.getElementById("brT"), brR=document.getElementById("brR");
+function syncBr(){document.getElementById("brTo").textContent=fmt(+brT.value,1).replace(",0","");document.getElementById("brRo").textContent=brR.value;}
+brT.addEventListener("input",()=>{setTemp(+brT.value);syncBr();});
+brR.addEventListener("input",()=>{br.R=+brR.value;syncBr();});
+function toggle(btn,key,label){btn.addEventListener("click",()=>{br[key]=!br[key];btn.setAttribute("aria-pressed",br[key]);if(key==="showMol") document.getElementById("brTag").textContent=br.showMol?"Broun harakati modeli":"Mikroskopda ko‘rinadigan manzara";});}
+toggle(document.getElementById("brMol"),"showMol"); toggle(document.getElementById("brTrace"),"trace");
+document.getElementById("brClear").addEventListener("click",()=>{br.trail=[{x:br.p.x,y:br.p.y}];});
+const brPlay=document.getElementById("brPlay");
+function syncPlay(){brPlay.textContent=br.playing?"To‘xtatish":"Boshlash";}
+brPlay.addEventListener("click",()=>{br.playing=!br.playing;syncPlay();}); syncPlay();
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.dataset.preset;
+  if(k==="small"){brR.value=12;brT.value=4.5;br.showMol=true;}
+  if(k==="big"){brR.value=42;brT.value=1;br.showMol=true;}
+  if(k==="perrin"){brR.value=16;brT.value=3;br.showMol=false;br.trace=true;}
+  br.R=+brR.value; setTemp(+brT.value); syncBr();
+  document.getElementById("brMol").setAttribute("aria-pressed",br.showMol);
+  document.getElementById("brTrace").setAttribute("aria-pressed",br.trace);
+  document.getElementById("brTag").textContent=br.showMol?"Broun harakati modeli":"Mikroskopda ko‘rinadigan manzara";
+  br.trail=[{x:br.p.x,y:br.p.y}]; br.playing=true; syncPlay();
+  document.getElementById("brStage").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+}));
+
+/* ---------- Tabs ---------- */
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function selectTab(t){
+  tabs.forEach(x=>{const on=x===t;x.setAttribute("aria-selected",on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute("aria-controls")).hidden=!on;});
+  requestAnimationFrame(()=>{ZM.fit();DF.fit();FC.fit();});
+}
+tabs.forEach((t,i)=>{
+  t.tabIndex=i?-1:0;
+  t.addEventListener("click",()=>selectTab(t));
+  t.addEventListener("keydown",e=>{
+    if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];selectTab(n);n.focus();}
+  });
+});
+
+/* ---------- Zoom (1-qoida) ---------- */
+const ZM=setupCanvas(document.getElementById("zmCanvas"));
+const zmIn=document.getElementById("zm"); let zmT=0;
+function zmMag(){return Math.pow(10,(zmIn.value/100)*5.5);}
+function zmDraw(){
+  const c=ZM.ctx,w=ZM.w,h=ZM.h; if(!w) return;
+  const mag=zmMag(), widthM=1e-3/mag, sp=w/(widthM/0.3e-9);
+  c.fillStyle=C.soft; c.fillRect(0,0,w,h);
+  const a2=Math.min(1,Math.max(0,(sp-7)/9));
+  const a1=1-a2;
+  if(a1>0){
+    const R=Math.min(w,h)*0.36*mag;
+    c.globalAlpha=a1;
+    const g=c.createRadialGradient(w/2-R*.3,h/2-R*.35,R*.05,w/2,h/2,R);
+    g.addColorStop(0,"#D7ECFF"); g.addColorStop(1,"#4F8FE0");
+    c.fillStyle=g; c.beginPath(); c.ellipse(w/2,h/2+R*0.05,R,R*0.92,0,0,6.283); c.fill();
+    const grain=Math.min(1,Math.max(0,(Math.log10(mag)-2.2)/1.5));
+    if(grain>0){c.globalAlpha=a1*grain*0.7;c.fillStyle="#1C3F7A";
+      for(let i=0;i<1400;i++){const x=(Math.sin(i*12.9898+zmT*0.8)*43758.5453%1+1)%1*w, y=(Math.sin(i*78.233+zmT*0.6)*12345.678%1+1)%1*h; c.fillRect(x,y,1.5,1.5);}}
+    c.globalAlpha=1;
+  }
+  if(a2>0){
+    c.globalAlpha=a2;
+    const sz=sp/2.6;
+    const cols=Math.ceil(w/sp)+2, rows=Math.ceil(h/(sp*0.88))+2;
+    c.lineWidth=sz>6?1:0;
+    for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+      const k=i*31+j*17;
+      const jx=Math.sin(zmT*3+k)*sz*0.18, jy=Math.cos(zmT*2.6+k*1.3)*sz*0.18, ang=k+zmT*0.7*Math.sin(k);
+      const x=(i-0.5)*sp+(j%2)*sp/2+jx, y=(j-0.5)*sp*0.88+jy;
+      c.fillStyle="#E8F1FB"; c.strokeStyle="rgba(0,0,0,.25)";
+      for(const da of [-0.92,0.92]){c.beginPath();c.arc(x+Math.cos(ang+da)*sz*0.85,y+Math.sin(ang+da)*sz*0.85,sz*0.45,0,6.283);c.fill();if(sz>6)c.stroke();}
+      c.fillStyle="#D9483B"; c.beginPath(); c.arc(x,y,sz*0.7,0,6.283); c.fill(); if(sz>6)c.stroke();
+    }
+    c.globalAlpha=1;
+  }
+}
+function zmLabel(){
+  const mag=zmMag(), L=1e-3/mag;
+  let t; if(L>=1e-4) t=fmt(L*1e3,L*1e3<1?2:0)+" mm"; else if(L>=1e-7) t=fmt(L*1e6,L*1e6<10?1:0)+" µm"; else t=fmt(L*1e9,L*1e9<10?1:0)+" nm";
+  document.getElementById("zmTag").textContent="Ekran kengligi taxminan "+t;
+  const mtxt = mag<1000? Math.round(mag)+"×" : mag<1e6? Math.round(mag/1000)+" ming ×" : fmt(mag/1e6,1).replace(",0","")+" mln ×";
+  document.getElementById("zmo").textContent=mtxt;
+}
+zmIn.addEventListener("input",zmLabel); zmLabel();
+visibleLoop(document.getElementById("zmCanvas"),dt=>{ if(!reduce) zmT+=dt; zmDraw(); });
+
+/* ---------- Diffuziya (2-qoida) ---------- */
+const DF=setupCanvas(document.getElementById("dfCanvas"));
+const MODES={
+  gas:{a:"Atir molekulalari",b:"Havo molekulalari",ca:()=>C.trace,cb:()=>C.cobalt,
+    text:"Gazlarda molekulalar orasidagi masofa katta, ular erkin va tez harakatlanadi. Shuning uchun atir hidi xonaga tez tarqaladi. Lekin har bir molekula yo‘lida son-sanoqsiz boshqa molekulalarga urilib, yo‘nalishini ko‘p marta o‘zgartiradi."},
+  liq:{a:"Suv molekulalari",b:"Sut zarralari",ca:()=>C.cobalt,cb:()=>C.pollen,
+    text:"Stakandagi suv ustiga sut quyib, aralashtirmasak ham, ular vaqt o‘tishi bilan o‘z-o‘zidan aralashadi. Suyuqlikda molekulalar zich joylashgan, shuning uchun aralashish gazdagidan sekinroq boradi."},
+  sol:{a:"Oltin atomlari",b:"Qo‘rg‘oshin atomlari",ca:()=>C.pollen,cb:()=>C.muted,
+    text:"Silliqlangan oltin va qo‘rg‘oshin ustma-ust qo‘yilib, ustiga og‘ir yuk qo‘yilgan. Besh yildan keyin atomlar bir-birining ichiga taxminan 1 mm kirib borgan. Qattiq jismlarda atomlar asosan joyida tebranadi va juda kam hollarda o‘rin almashadi."}
+};
+const df={mode:"gas",T:2,open:false,time:0,p:[],grid:null,cols:0,rows:0};
+function dfInit(){
+  df.p=[]; df.time=0; df.open=false;
+  document.getElementById("dfGo").disabled=false;
+  const w=DF.w,h=DF.h; if(!w) return;
+  if(df.mode==="sol"){
+    const sp=Math.max(14,Math.min(w,h)/18); df.cols=Math.floor(w/sp); df.rows=Math.floor(h/sp); df.sp=sp;
+    df.offx=(w-df.cols*sp)/2+sp/2; df.offy=(h-df.rows*sp)/2+sp/2;
+    df.grid=[];
+    for(let i=0;i<df.cols;i++)for(let j=0;j<df.rows;j++){const o={i,j,k:i<df.cols/2?0:1,ph:Math.random()*6.28};df.p.push(o);df.grid[i*df.rows+j]=o;}
+  } else {
+    const N = df.mode==="gas"? 160 : 360;
+    const v = df.mode==="gas"? 90 : 30;
+    for(let n=0;n<N;n++){const k=n%2; df.p.push({k,x:(k?w/2:0)+Math.random()*w/2,y:Math.random()*h,vx:gauss()*v,vy:gauss()*v});}
+  }
+  const m=MODES[df.mode];
+  document.getElementById("dfLegend").innerHTML='<span><span class="dot" style="background:'+m.ca()+'"></span>'+m.a+'</span><span><span class="dot" style="background:'+m.cb()+'"></span>'+m.b+'</span>';
+  document.getElementById("dfText").textContent=m.text;
+  document.getElementById("dfTag").textContent="To‘siq hali turibdi";
+}
+DF.onResize=()=>dfInit();
+function dfStep(dt){
+  const w=DF.w,h=DF.h, mid=w/2, sT=Math.sqrt(df.T/2);
+  if(df.open) df.time+=dt;
+  if(df.mode==="sol"){
+    df.p.forEach(o=>o.ph+=dt*9*sT);
+    if(df.open){
+      const rate=0.012*Math.pow(df.T/2,2.2)*df.p.length*dt;
+      let n=Math.floor(rate)+(Math.random()<rate%1?1:0);
+      while(n--){
+        const i=Math.floor(Math.random()*df.cols), j=Math.floor(Math.random()*df.rows);
+        const dir=Math.random()<.5?[1,0]:[0,1]; const i2=i+dir[0], j2=j+dir[1];
+        if(i2>=df.cols||j2>=df.rows) continue;
+        const A=df.grid[i*df.rows+j], B=df.grid[i2*df.rows+j2]; const t=A.k; A.k=B.k; B.k=t;
+      }
+    }
+    return;
+  }
+  const gas=df.mode==="gas", r=gas?4:3.5;
+  const vT=(gas?90:30)*sT;
+  for(const o of df.p){
+    if(!gas){ const g=4; o.vx+=-g*o.vx*dt+vT*Math.sqrt(2*g*dt)*gauss(); o.vy+=-g*o.vy*dt+vT*Math.sqrt(2*g*dt)*gauss(); }
+    const ox=o.x; o.x+=o.vx*dt; o.y+=o.vy*dt;
+    if(o.x<r){o.x=r;o.vx=Math.abs(o.vx);} if(o.x>w-r){o.x=w-r;o.vx=-Math.abs(o.vx);}
+    if(o.y<r){o.y=r;o.vy=Math.abs(o.vy);} if(o.y>h-r){o.y=h-r;o.vy=-Math.abs(o.vy);}
+    if(!df.open && (ox<mid)!==(o.x<mid)){o.x=ox<mid?mid-r:mid+r;o.vx=-o.vx;}
+  }
+  if(gas){ // tasodifiy to‘qnashuvlar o‘rniga yo‘nalishning vaqti-vaqti bilan o‘zgarishi
+    for(const o of df.p){ if(Math.random()<dt*2.5){const sp=Math.hypot(o.vx,o.vy),a=Math.random()*6.283;o.vx=Math.cos(a)*sp;o.vy=Math.sin(a)*sp;} }
+  }
+}
+function dfMixValue(){
+  const w=DF.w; let cross=0,N=df.p.length;
+  if(df.mode==="sol"){ df.p.forEach(o=>{ if((o.i<df.cols/2?0:1)!==o.k) cross++; }); }
+  else df.p.forEach(o=>{ if((o.x<w/2?0:1)!==o.k) cross++; });
+  return Math.min(100,Math.round(cross/(N*0.5)*100));
+}
+function dfDraw(){
+  const c=DF.ctx,w=DF.w,h=DF.h; if(!w) return;
+  c.fillStyle=C.soft; c.fillRect(0,0,w,h);
+  const m=MODES[df.mode], ca=m.ca(), cb=m.cb();
+  if(df.mode==="sol"){
+    const sp=df.sp, amp=sp*0.08*Math.sqrt(df.T/2);
+    for(const o of df.p){
+      const x=df.offx+o.i*sp+Math.sin(o.ph)*amp, y=df.offy+o.j*sp+Math.cos(o.ph*1.3)*amp;
+      c.fillStyle=o.k?cb:ca; c.beginPath(); c.arc(x,y,sp*0.38,0,6.283); c.fill();
+    }
+  } else {
+    const r=df.mode==="gas"?4:3.5;
+    for(const o of df.p){c.fillStyle=o.k?cb:ca;c.beginPath();c.arc(o.x,o.y,r,0,6.283);c.fill();}
+  }
+  if(!df.open){c.fillStyle=C.ink;c.fillRect(w/2-2,0,4,h);}
+  const mix=dfMixValue();
+  document.getElementById("dfMix").textContent=mix+"%";
+  document.getElementById("dfBar").style.width=mix+"%";
+  let t=df.time, txt;
+  if(df.mode==="sol"){ const yrs=t/12; txt=fmt(yrs,1)+" yil"; }
+  else txt=fmt(t,1)+" s";
+  document.getElementById("dfTime").textContent=txt;
+}
+visibleLoop(document.getElementById("dfCanvas"),dt=>{dfStep(dt);dfDraw();});
+document.getElementById("dfGo").addEventListener("click",e=>{df.open=true;e.target.disabled=true;document.getElementById("dfTag").textContent=df.mode==="sol"?"Model vaqti tezlashtirilgan":"To‘siq olib tashlandi";});
+document.getElementById("dfReset").addEventListener("click",dfInit);
+document.querySelectorAll(".mode button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".mode button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  df.mode=b.dataset.m; dfInit();
+}));
+const dfT=document.getElementById("dfT");
+dfT.addEventListener("input",()=>{const k=Math.sqrt(+dfT.value/df.T);df.p.forEach(o=>{if(o.vx!==undefined){o.vx*=k;o.vy*=k;}});df.T=+dfT.value;document.getElementById("dfTo").textContent=fmt(df.T,1).replace(",0","");});
+
+/* ---------- Kuchlar (3-qoida) ---------- */
+const FC=setupCanvas(document.getElementById("fcCanvas"));
+const fcIn=document.getElementById("fc"); let fcT=0;
+const F=x=>12*(Math.pow(x,-13)-Math.pow(x,-7));
+function arrow(c,x1,y,x2,col){
+  c.strokeStyle=col;c.fillStyle=col;c.lineWidth=4;c.beginPath();c.moveTo(x1,y);c.lineTo(x2,y);c.stroke();
+  const d=Math.sign(x2-x1)||1;c.beginPath();c.moveTo(x2+d*10,y);c.lineTo(x2-d*2,y-8);c.lineTo(x2-d*2,y+8);c.closePath();c.fill();
+}
+function fcDraw(){
+  const c=FC.ctx,w=FC.w,h=FC.h; if(!w) return;
+  const x=+fcIn.value, f=F(x);
+  c.fillStyle=C.soft;c.fillRect(0,0,w,h);
+  // yuqori: molekulalar
+  const top=h*0.32, rad=Math.min(26,w*0.05), unit=Math.min(w*0.22,(w-4*rad)/3.4);
+  const cx=w/2, x1=cx-x*unit/2, x2=cx+x*unit/2;
+  const jit=reduce?0:Math.sin(fcT*12)*1.2;
+  // kuch strelkalari
+  const L=Math.max(-1,Math.min(1,f/4))*unit*0.9;
+  if(Math.abs(f)>0.05){
+    const col=f>0?C.trace:C.teal;
+    arrow(c,x1-rad*(f>0?1.1:-1.1),top,x1-rad*(f>0?1.1:-1.1)-L,col);
+    arrow(c,x2+rad*(f>0?1.1:-1.1),top,x2+rad*(f>0?1.1:-1.1)+L,col);
+  }
+  [x1+jit,x2-jit].forEach(px=>{const g=c.createRadialGradient(px-rad*.3,top-rad*.3,2,px,top,rad);g.addColorStop(0,"#BFD0FF");g.addColorStop(1,C.cobalt);c.fillStyle=g;c.beginPath();c.arc(px,top,rad,0,6.283);c.fill();});
+  // pastki: grafik
+  const gx0=46, gx1=w-16, gy0=h*0.58, gy1=h-24, xmin=0.88, xmax=3, fmin=-3.2, fmax=6;
+  const X=v=>gx0+(v-xmin)/(xmax-xmin)*(gx1-gx0), Y=v=>gy0+(fmax-Math.max(fmin,Math.min(fmax,v)))/(fmax-fmin)*(gy1-gy0);
+  c.strokeStyle=C.line;c.lineWidth=1;c.beginPath();c.moveTo(gx0,Y(0));c.lineTo(gx1,Y(0));c.moveTo(gx0,gy0);c.lineTo(gx0,gy1);c.stroke();
+  c.fillStyle=C.muted;c.font="12px 'Golos Text',system-ui,sans-serif";
+  c.textAlign="right";c.fillText("yuqorida: itarilish",gx1,gy0+12);c.fillText("pastda: tortishish",gx1,gy1-4);c.textAlign="left";c.fillText("F",gx0-16,gy0+10);c.fillText("r",gx1-8,Y(0)-6);
+  c.strokeStyle=C.ink;c.lineWidth=2;c.beginPath();
+  for(let i=0;i<=200;i++){const v=xmin+(xmax-xmin)*i/200;const px=X(v),py=Y(F(v));i?c.lineTo(px,py):c.moveTo(px,py);}c.stroke();
+  c.fillStyle=f>0.05?C.trace:(f<-0.05?C.teal:C.ink);c.beginPath();c.arc(X(x),Y(f),6,0,6.283);c.fill();
+  c.setLineDash([4,4]);c.strokeStyle=C.muted;c.beginPath();c.moveTo(X(1),gy0);c.lineTo(X(1),gy1);c.stroke();c.setLineDash([]);
+  c.fillStyle=C.muted;c.fillText("r₀",X(1)+4,gy1-4);
+}
+function fcText(){
+  const x=+fcIn.value, f=F(x);
+  document.getElementById("fco").textContent=fmt(x,2)+" r₀";
+  const st=document.getElementById("fcState"), tx=document.getElementById("fcText");
+  if(f>0.05){st.textContent="Itarilish";st.style.color="var(--trace)";tx.textContent="Molekulalar juda yaqin. Itarilish kuchi tortishishdan katta, molekulalar bir-biridan qochadi. Shu sababli qattiq jism va suyuqliklarni siqish juda qiyin.";}
+  else if(f<-0.05){st.textContent="Tortishish";st.style.color="var(--teal)";tx.textContent="Tortishish kuchi ustun. Molekulalar bir-biriga tortiladi, shu sababli jismlar yaxlit turadi va sochilib ketmaydi."+(x>2.2?" Lekin masofa kattalashgani sari bu kuch juda kichrayib boradi.":"");}
+  else if(x>2){st.textContent="Deyarli ta’sir yo‘q";st.style.color="var(--muted)";tx.textContent="Molekulalar uzoqlashganda o‘zaro ta’sir kuchi deyarli nolga teng. Singan qalam bo‘laklarini qayta yopishtirib bo‘lmasligining sababi shu.";}
+  else {st.textContent="Muvozanat";st.style.color="var(--ink)";tx.textContent="r₀ masofada tortishish va itarilish kuchlari tenglashadi. Qattiq jismlarda atomlar shu vaziyat atrofida tebranadi.";}
+}
+fcIn.addEventListener("input",fcText); fcText();
+visibleLoop(document.getElementById("fcCanvas"),dt=>{fcT+=dt;fcDraw();});
+
+/* ---------- Test ---------- */
+const QS=[
+  {q:"Moddaning tuzilishi va xossalarini molekulalar harakati va o‘zaro ta’siri orqali o‘rganadigan nazariya qanday ataladi?",o:["Molekulyar-kinetik nazariya","Termodinamika","Elektromagnit nazariya","Nisbiylik nazariyasi"],a:0,e:"Bu molekulyar-kinetik nazariya (MKN)."},
+  {q:"Broun harakatini birinchi bo‘lib kim va qachon kuzatgan?",o:["Albert Eynshteyn, 1905-yil","Robert Broun, 1827-yil","Jan Perren, 1926-yil","Demokrit, m.a. V asr"],a:1,e:"Ingliz botanigi Robert Broun 1827-yilda gul changining suvdagi harakatini kuzatgan."},
+  {q:"Broun harakatining sababi nima?",o:["Suvdagi oqimlar","Zarraning o‘zi harakatlanishi","Molekulalarning zarraga tartibsiz urilishi","Yerning tortishish kuchi"],a:2,e:"Molekulalar zarraga turli tomondan teng bo‘lmagan zarb bilan urilib, natijaviy kuch hosil qiladi."},
+  {q:"Qaysi holatda Broun zarrasi kuchliroq turtiladi?",o:["Zarra katta, harorat past","Zarra kichik, harorat yuqori","Zarra katta, harorat yuqori","Zarra o‘lchami ahamiyatsiz"],a:1,e:"Kichik zarraga urilishlar kamroq muvozanatlashadi, yuqori haroratda esa molekulalar tezroq harakat qiladi."},
+  {q:"Oltin va qo‘rg‘oshin tajribasida 5 yilda atomlar taxminan qancha chuqurlikka kirib borgan?",o:["1 nm","1 mm","1 sm","1 m"],a:1,e:"Darslikka ko‘ra, taxminan 1 mm. Qattiq jismlarda diffuziya juda sekin boradi."},
+  {q:"Qattiq jism zarralari harakat qilsa ham, nega jism sochilib ketmaydi?",o:["Zarralar umuman harakat qilmaydi","Zarralar orasidagi o‘zaro ta’sir kuchlari katta","Havo bosimi ushlab turadi","Zarralar juda og‘ir"],a:1,e:"Zarralar orasidagi tortishish kuchlari ularni muvozanat vaziyati atrofida ushlab turadi."},
+  {q:"“Xaotik” so‘zi qanday ma’noni bildiradi?",o:["Tez","Tartibsiz","Aylanma","To‘g‘ri chiziqli"],a:1,e:"Lotincha «xaos» so‘zidan olingan bo‘lib, «tartibsiz» degan ma’noni bildiradi."}
+];
+const qz={i:0,score:0}; const box=document.getElementById("quiz");
+function renderQ(){
+  if(qz.i>=QS.length){
+    box.innerHTML='<h3>Test yakunlandi</h3><p class="q">Natija: '+qz.score+' / '+QS.length+'</p><p>'+(qz.score===QS.length?"A’lo! Mavzuni to‘liq o‘zlashtirdingiz.":qz.score>=5?"Yaxshi natija. Xato qilgan savollaringizga qaytib qarang.":"Mavzuni yana bir bor ko‘rib chiqing va modellar bilan tajriba qiling.")+'</p><button class="btn primary" id="qAgain">Testni qayta ishlash</button>';
+    document.getElementById("qAgain").onclick=()=>{qz.i=0;qz.score=0;renderQ();};
+    return;
+  }
+  const Q=QS[qz.i];
+  box.innerHTML='<div class="prog">Mini test: '+(qz.i+1)+'-savol, jami '+QS.length+' ta</div><div class="q">'+Q.q+'</div><div class="opts"></div><div class="fb"></div>';
+  const opts=box.querySelector(".opts"), fb=box.querySelector(".fb");
+  Q.o.forEach((t,j)=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{
+    opts.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===Q.a)x.classList.add("ok");});
+    if(j===Q.a){qz.score++;fb.innerHTML='<b style="color:var(--good)">To‘g‘ri.</b> '+Q.e;}
+    else{b.classList.add("no");fb.innerHTML='<b style="color:var(--bad)">Noto‘g‘ri.</b> '+Q.e;}
+    const n=document.createElement("button");n.className="btn primary";n.style.marginTop="12px";n.textContent=qz.i+1<QS.length?"Keyingi savol":"Natijani ko‘rish";
+    n.onclick=()=>{qz.i++;renderQ();box.querySelector("button")&&box.querySelector("button").focus();};fb.appendChild(document.createElement("br"));fb.appendChild(n);
+  };opts.appendChild(b);});
+}
+renderQ();
+})();
+</script>
+</body>
+</html>

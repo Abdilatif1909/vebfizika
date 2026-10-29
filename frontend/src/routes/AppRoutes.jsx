@@ -8,6 +8,7 @@ import Dashboard from "../pages/Dashboard.jsx";
 import Documents from "../pages/Documents.jsx";
 import Laboratory from "../pages/Laboratory.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
+import LaboratoryHtmlViewer from "../pages/LaboratoryHtmlViewer.jsx";
 import MobileApps from "../pages/MobileApps.jsx";
 import Practical from "../pages/Practical.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
@@ -60,6 +61,7 @@ export default function AppRoutes() {
         <Route path="/practical" element={<Navigate to="/theory" replace />} />
         <Route path="/laboratory" element={<Laboratory />} />
         <Route path="/laboratoriya" element={<Laboratory />} />
+        <Route path="/laboratoriya/html/:labKey" element={<LaboratoryHtmlViewer />} />
         <Route path="/laboratory/:simulationId/view" element={<SimulationViewer />} />
         <Route path="/laboratoriya/:simulationId/view" element={<SimulationViewer />} />
         <Route path="/simulations" element={<Simulations />} />

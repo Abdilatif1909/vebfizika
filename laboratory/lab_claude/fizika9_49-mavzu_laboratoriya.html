@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>49-§. Laboratoriya ishi: shishaning nur sindirish ko‘rsatkichi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0F5; --surface:#FFFFFF; --ink:#16233D; --muted:#55627A; --line:#C9D4E0;
+  --cobalt:#2C56C9; --pollen:#D99A12; --teal:#1F8F84; --trace:#D43F3A; --soft:#DCE6F0;
+  --good:#1E8A4C; --bad:#C2372F;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+    --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+    --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+  --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+  --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;}
+h1,h2,h3{font-family:"Unbounded","Golos Text",system-ui,sans-serif;line-height:1.2;margin:0;}
+h1{font-size:clamp(1.6rem,4.2vw,2.6rem);font-weight:700;letter-spacing:-.01em;}
+h2{font-size:clamp(1.25rem,2.6vw,1.65rem);font-weight:700;}
+h3{font-size:1.05rem;font-weight:500;}
+p{margin:.6em 0;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+button,input,select{font:inherit;color:inherit;}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;border-radius:6px;}
+img,canvas,svg{max-width:100%;}
+
+/* hero */
+.hero{padding:36px 0 28px;}
+.crumb{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:28px;align-items:start;}
+@media (min-width:900px){.hero-grid{grid-template-columns:5fr 7fr;}}
+.lead{font-size:1.1rem;color:var(--muted);max-width:42ch;}
+.def{margin-top:20px;padding:16px 18px;border-left:5px solid var(--teal);background:var(--surface);border-radius:0 12px 12px 0;}
+.def b{color:var(--teal);}
+
+.scope{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.scope-view{position:relative;border-radius:50%/50%;overflow:hidden;}
+.stage{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--soft);}
+.stage canvas{display:block;width:100%;height:100%;}
+.stage .tag{position:absolute;left:10px;top:8px;font-size:.82rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 8px;border-radius:8px;}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin-top:12px;}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);}
+.ctl output{color:var(--ink);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--cobalt);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.btn{border:1.5px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:.93rem;}
+.btn:hover{border-color:var(--cobalt);}
+.btn[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.note{font-size:.92rem;color:var(--muted);margin-top:10px;}
+
+/* sections */
+section{padding:44px 0;border-top:1px solid var(--line);}
+.sec-head{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;}
+.sec-head .n{font-family:"Unbounded",sans-serif;color:var(--cobalt);font-size:1rem;}
+.intro{max-width:68ch;color:var(--muted);}
+
+.rules{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px;}
+@media (min-width:800px){.rules{grid-template-columns:repeat(3,1fr);}}
+.rules button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:16px 18px;border-radius:14px;background:var(--surface);border:2px solid var(--line);}
+.rules button:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;}
+.rules button[aria-selected="true"]{border-color:var(--cobalt);box-shadow:inset 0 -4px 0 var(--cobalt);}
+.rules .k{font-family:"Unbounded",sans-serif;font-size:1.6rem;color:var(--cobalt);display:block;line-height:1;margin-bottom:6px;}
+.panel{margin-top:16px;display:grid;gap:22px;grid-template-columns:1fr;align-items:center;}
+@media (min-width:860px){.panel{grid-template-columns:7fr 5fr;}}
+.panel[hidden]{display:none;}
+
+.mode{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0 6px;flex-wrap:wrap;}
+.mode button{border:0;background:transparent;padding:7px 16px;cursor:pointer;}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--bg);}
+.meter{height:12px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line);}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--pollen));transition:width .3s;}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin:10px 0;font-size:.95rem;}
+.stats b{font-size:1.25rem;font-family:"Unbounded",sans-serif;font-weight:500;}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);flex-wrap:wrap;}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+
+.force-state{font-family:"Unbounded",sans-serif;font-size:1.3rem;margin:6px 0;}
+
+/* timeline */
+.tl{list-style:none;padding:0;margin:24px 0 0;position:relative;}
+.tl::before{content:"";position:absolute;left:92px;top:6px;bottom:6px;width:2px;background:var(--line);}
+.tl li{display:grid;grid-template-columns:80px 1fr;gap:28px;padding:10px 0;position:relative;}
+.tl li::before{content:"";position:absolute;left:86px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--cobalt);}
+.tl .y{font-family:"Unbounded",sans-serif;font-size:.95rem;text-align:right;color:var(--cobalt);padding-top:6px;}
+.tl h3{margin-top:4px;}
+.tl p{margin:.2em 0 0;color:var(--muted);max-width:62ch;}
+
+/* questions */
+.qa{display:grid;gap:10px;margin-top:18px;}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+summary{cursor:pointer;font-weight:600;}
+details p{color:var(--muted);margin-bottom:0;}
+
+.quiz{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;}
+.quiz .prog{color:var(--muted);font-size:.92rem;}
+.quiz .q{font-size:1.15rem;font-weight:600;margin:8px 0 14px;}
+.opts{display:grid;gap:8px;}
+.opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);padding:11px 14px;border-radius:12px;cursor:pointer;}
+.opts button:hover:not(:disabled){border-color:var(--cobalt);}
+.opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));}
+.opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));}
+.fb{min-height:1.6em;margin-top:12px;}
+.summary-box{margin-top:30px;padding:20px 22px;border-radius:16px;background:var(--ink);color:var(--bg);}
+.summary-box h3{color:var(--bg);margin-bottom:6px;}
+.summary-box ul{margin:8px 0 0;padding-left:20px;}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;}
+.theme-toggle{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+.formula{display:inline-block;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.25rem;padding:6px 14px;border:2px solid var(--cobalt);border-radius:10px;background:var(--surface);margin:4px 0;}
+.calc{display:grid;gap:10px;}
+.calc .row{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;}
+.calc .row .lhs{font-family:"Cambria Math","Times New Roman",serif;font-size:1.15rem;color:var(--cobalt);}
+.calc .row .rhs{font-variant-numeric:tabular-nums;}
+.big{font-family:"Unbounded","Golos Text",sans-serif;font-size:1.5rem;font-weight:500;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.num{width:7.5em;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);}
+select.num{width:auto;}
+.prob{counter-reset:none;}
+.prob details p,.prob details li{color:var(--ink);}
+.prob .given{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:.95rem;}
+.prob .given>div{background:var(--bg);border-radius:10px;padding:10px 12px;}
+.prob .given b{display:block;color:var(--muted);font-weight:500;margin-bottom:2px;}
+table.t{border-collapse:collapse;width:100%;min-width:480px;}
+.tablewrap{overflow-x:auto;}
+table.t th,table.t td{border:1px solid var(--line);padding:8px 10px;text-align:left;}
+table.t th{background:var(--soft);font-weight:600;}
+table.t input{width:100%;min-width:5em;}
+.ok-t{color:var(--good);font-weight:600;}.no-t{color:var(--bad);font-weight:600;}
+.home{display:grid;gap:12px;margin-top:16px;}
+@media (min-width:800px){.home{grid-template-columns:1fr 1fr;}}
+.home > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.home ol{padding-left:20px;margin:6px 0 0;}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="crumb">Fizika, 9-sinf. V bob: Yorug‘likning tarqalish qonunlari. Optik asboblar</div>
+    <div class="hero-grid">
+      <div>
+        <h1>49-§. Laboratoriya ishi: shishaning nur sindirish ko‘rsatkichini aniqlash</h1>
+        <div class="def"><b>Maqsad:</b> shishaning nur sindirish ko‘rsatkichini aniqlashni o‘rganish.<br><b>Jihozlar:</b> yorug‘lik manbayi, tirqishli to‘siq, uchburchakli shisha prizma, ignalar, transportir.</div>
+        <p>Nur prizmaning chap yog‘iga perpendikulyar tushadi va sinmay o‘tadi. O‘ng yog‘ida u α burchak ostida tushib, havoga chiqishda sinadi va o‘z yo‘lidan γ burchakka buriladi (73-rasm). Bunda α — prizmaning yuqori uchidagi burchak.</p>
+        <p class="formula">n = sin(α + γ)/sin α</p>
+        <p class="note">Transportirni nur chiqqan O nuqtaga qo‘yilgan deb hisoblang. γ ni shkaladan 1° aniqlikda o‘qing: bu shtrix chiziq (nurning davomi) bilan chiqqan nur orasidagi burchak. Prizma shishasi har safar boshqacha bo‘ladi.</p>
+      </div>
+      <div class="scope">
+        <div class="mode" role="group" aria-label="Prizma burchagi" id="pa"><button aria-pressed="true" data-a="30">α = 30°</button><button aria-pressed="false" data-a="35">α = 35°</button><button aria-pressed="false" data-a="40">α = 40°</button></div>
+        <div class="stage" style="aspect-ratio:1/1"><canvas id="pCanvas" role="img" aria-label="Shisha prizma, nur va transportir"></canvas></div>
+        <div class="btns"><button class="btn" id="zoom" aria-pressed="false">Transportirni kattalashtirish</button><button class="btn primary" id="rec">Natijani jadvalga o‘tkazish</button></div>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+<section>
+  <div class="wrap prob">
+    <div class="sec-head"><span class="n">A</span><h2>Natijalar jadvali</h2></div>
+    <p class="intro">Ikki xil prizma burchagi bilan o‘lchang. γ ni shkaladan o‘qib kiriting, keyin sin α, sin(α + γ) va n ni hisoblang.</p>
+    <div class="tablewrap"><table class="t"><thead><tr><th>№</th><th>α</th><th>sin α</th><th>γ</th><th>sin(α + γ)</th><th>n</th></tr></thead><tbody id="tb"><tr><td colspan="6" class="note">Prizma burchagini tanlab, “Natijani jadvalga o‘tkazish” tugmasini bosing.</td></tr></tbody></table></div>
+    <div class="btns" style="align-items:center"><label for="navg">n<sub>o‘rt</sub> =</label><input class="num" id="navg"><button class="btn primary" id="chk">Tekshirish</button></div>
+    <p id="res" aria-live="polite"></p>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">B</span><h2>Darslikdagi savollar</h2></div>
+    <div class="qa">
+      <details><summary>1. Tajribadagi yorug‘lik nurining yo‘lini tahlil qiling, tushish va sinish burchaklarini ko‘rsating.</summary><p>Nur chap yog‘ga perpendikulyar tushgani uchun sinmaydi. O‘ng yog‘ga u α burchak ostida tushadi (bu prizmaning yuqori burchagiga teng). Havoga chiqishda sinish burchagi β = α + γ bo‘ladi va nur normaldan uzoqlashadi.</p></details>
+      <details><summary>2. Tajriba jarayoni va natijalarini tahlil qiling.</summary><p>Nur shishadan havoga o‘tishda sinish qonuniga ko‘ra 1/n = sin α/sin(α + γ), bundan n = sin(α + γ)/sin α. Turli prizma burchaklari bilan olingan n qiymatlari bir-biriga yaqin chiqadi (oddiy shisha uchun ~1,5). Farqlar burchakni o‘qishdagi ±1° xatolik bilan bog‘liq.</p></details>
+    </div>
+    <div class="quiz" id="quiz" aria-live="polite"></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Manba: “Fizika” darsligi, 9-sinf (G‘afur G‘ulom nomidagi nashriyot-matbaa ijodiy uyi, 2019), 143-bet.</div></footer>
+
+<button class="btn theme-toggle" id="themeBtn" aria-label="Yorug‘ yoki qorong‘i rejim">◐</button>
+<script>
+(function(){
+"use strict";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let C = {};
+function readColors(){
+  const s = getComputedStyle(document.documentElement);
+  ["bg","surface","ink","muted","line","cobalt","pollen","teal","trace","soft","good","bad"].forEach(k=>C[k]=s.getPropertyValue("--"+k).trim());
+}
+readColors();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+try{const t=localStorage.getItem("fz-theme"); if(t){document.documentElement.dataset.theme=t; readColors();}}catch(e){}
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+  try{localStorage.setItem("fz-theme",r.dataset.theme);}catch(e){}
+  readColors();
+});
+const fmt=(x,d)=>x.toFixed(d).replace(".",",");
+function sci(x,d){ if(d===undefined)d=2; if(x===0||!isFinite(x)) return "0";
+  const e=Math.floor(Math.log10(Math.abs(x))); let m=x/Math.pow(10,e);
+  if(Math.abs(+m.toFixed(d))>=10){m/=10;}
+  const ee=Math.floor(Math.log10(Math.abs(x/m))+1e-9);
+  if(ee>=-2&&ee<=3) return fmt(+x.toFixed(Math.max(0,d-ee)),Math.max(0,d-ee)).replace(/,?0+$/,"").replace(/,$/,"");
+  const sup=String(ee).replace(/-/g,"⁻").replace(/\d/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[c]);
+  return fmt(m,d).replace(/,?0+$/,"")+"·10"+sup;
+}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function setupCanvas(cv){
+  const o={cv,ctx:cv.getContext("2d"),w:0,h:0};
+  function fit(){
+    const r=cv.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
+    if(r.width<2) return;
+    const ow=o.w, oh=o.h;
+    o.w=r.width; o.h=r.height; cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    o.ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(o.onResize) o.onResize(ow,oh);
+  }
+  o.fit=fit; new ResizeObserver(fit).observe(cv); fit(); return o;
+}
+function visibleLoop(el,step){
+  let vis=true,last=0;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0}).observe(el);
+  function frame(t){const dt=Math.min((t-last)/1000||0,0.04);last=t;if(vis)step(dt);requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+}
+function makeTabs(onChange){
+  const tabs=[...document.querySelectorAll('[role="tab"]')];
+  function sel(t){tabs.forEach(x=>{const on=x===t;x.setAttribute("aria-selected",on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute("aria-controls")).hidden=!on;});if(onChange)requestAnimationFrame(onChange);}
+  tabs.forEach((t,i)=>{t.tabIndex=t.getAttribute("aria-selected")==="true"?0:-1;t.addEventListener("click",()=>sel(t));
+    t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];sel(n);n.focus();}});});
+}
+function makeQuiz(box,QS){
+  const qz={i:0,score:0};
+  function render(){
+    if(qz.i>=QS.length){
+      box.innerHTML='<h3>Test yakunlandi</h3><p class="q">Natija: '+qz.score+' / '+QS.length+'</p><p>'+(qz.score===QS.length?"A’lo! Mavzuni to‘liq o‘zlashtirdingiz.":qz.score>=QS.length-2?"Yaxshi natija. Xato qilgan savollaringizga qaytib qarang.":"Mavzuni yana bir bor ko‘rib chiqing va modellar bilan tajriba qiling.")+'</p><button class="btn primary">Testni qayta ishlash</button>';
+      box.querySelector("button").onclick=()=>{qz.i=0;qz.score=0;render();};return;
+    }
+    const Q=QS[qz.i];
+    box.innerHTML='<div class="prog">Mini test: '+(qz.i+1)+'-savol, jami '+QS.length+' ta</div><div class="q">'+Q.q+'</div><div class="opts"></div><div class="fb"></div>';
+    const opts=box.querySelector(".opts"),fb=box.querySelector(".fb");
+    Q.o.forEach((t,j)=>{const b=document.createElement("button");b.innerHTML=t;b.onclick=()=>{
+      opts.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===Q.a)x.classList.add("ok");});
+      if(j===Q.a){qz.score++;fb.innerHTML='<b style="color:var(--good)">To‘g‘ri.</b> '+Q.e;}else{b.classList.add("no");fb.innerHTML='<b style="color:var(--bad)">Noto‘g‘ri.</b> '+Q.e;}
+      const n=document.createElement("button");n.className="btn primary";n.style.marginTop="12px";n.textContent=qz.i+1<QS.length?"Keyingi savol":"Natijani ko‘rish";
+      n.onclick=()=>{qz.i++;render();const f=box.querySelector("button");if(f)f.focus();};fb.appendChild(document.createElement("br"));fb.appendChild(n);
+    };opts.appendChild(b);});
+  }
+  render();
+}
+/* jadval tekshirish: <input data-ans="28" data-tol="0.5"> */
+function makeCheckTable(btn,out){
+  btn.addEventListener("click",()=>{
+    const ins=[...document.querySelectorAll(btn.dataset.target.split(",").map(s=>s.trim()+" input").join(","))];let ok=0;
+    ins.forEach(i=>{const v=parseFloat(i.value.replace(",",".").replace(/\s/g,""));const a=+i.dataset.ans,tol=+(i.dataset.tol||0.01*Math.abs(a));
+      const good=isFinite(v)&&Math.abs(v-a)<=tol;if(good)ok++;i.style.borderColor=good?"var(--good)":"var(--bad)";});
+    out.textContent=ok+" / "+ins.length+" ta katak to‘g‘ri."+(ok<ins.length?" Qizil kataklarni qayta tekshiring.":" Barakalla!");
+  });
+}
+function parseNum(v){
+  let s=String(v).trim().replace(/\s/g,"").replace(/,/g,".").replace(/−/g,"-");
+  s=s.replace(/[·*x×]10\^?/i,"e").replace(/⁻/g,"-").replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(c));
+  if(/^10\^?-?\d+$/.test(s)) s="1e"+s.replace(/^10\^?/,"");
+  return s===""?NaN:Number(s);
+}
+/* masalalar: {q, ans, unit, tol(nisbiy), sol, hint} */
+function makeProblems(box,list){
+  list.forEach((p,i)=>{
+    const d=document.createElement("details");
+    const hasAns=p.ans!==undefined;
+    d.innerHTML='<summary>'+p.q+'</summary>'+
+      (hasAns?'<div class="btns" style="align-items:center"><label class="sr" for="pa'+box.id+i+'">Javob</label><input class="num" id="pa'+box.id+i+'" placeholder="javob"> <span>'+(p.unit||"")+'</span><button class="btn">Tekshirish</button>'+(p.hint?'<button class="btn">Maslahat</button>':'')+'<button class="btn">Yechimni ko‘rish</button></div><p class="fbk" aria-live="polite"></p>':'')+
+      '<div class="sol"'+(hasAns?' hidden':'')+'><p>'+p.sol+'</p></div>';
+    box.appendChild(d);
+    if(!hasAns) return;
+    const inp=d.querySelector("input"),bs=d.querySelectorAll(".btns button"),fb=d.querySelector(".fbk"),sol=d.querySelector(".sol");
+    const check=()=>{const v=parseNum(inp.value);const tol=p.tol||0.03;
+      if(!isFinite(v)){fb.innerHTML='<span class="no-t">Son kiriting.</span> Katta sonlarni 4,8e22 ko‘rinishida yozing.';return;}
+      const ok=Math.abs(v-p.ans)<=Math.abs(p.ans)*tol+(p.abs||0);
+      fb.innerHTML=ok?'<span class="ok-t">To‘g‘ri!</span>':'<span class="no-t">Hali to‘g‘ri emas.</span> Birliklarni XBS ga o‘tkazganingizni tekshiring.';
+      inp.style.borderColor=ok?"var(--good)":"var(--bad)"; if(ok) sol.hidden=false;};
+    bs[0].onclick=check; inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    if(p.hint){bs[1].onclick=()=>{fb.innerHTML="Maslahat: "+p.hint;};}
+    bs[bs.length-1].onclick=()=>{sol.hidden=false;};
+  });
+}
+
+
+const nTrue=1.48+Math.random()*0.14;let A=30,zoom=false,rows=[];
+document.querySelectorAll("#pa button").forEach(b=>b.onclick=()=>{A=+b.dataset.a;document.querySelectorAll("#pa button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+document.getElementById("zoom").onclick=e=>{zoom=!zoom;e.target.setAttribute("aria-pressed",zoom);};
+function gam(a){const s=nTrue*Math.sin(a*Math.PI/180);return Math.asin(Math.min(1,s))*180/Math.PI-a;}
+const PC=setupCanvas(document.getElementById("pCanvas"));
+function draw(){const g=PC.ctx,w=PC.w,h=PC.h;if(!w)return;g.fillStyle=C.soft;g.fillRect(0,0,w,h);const a=A*Math.PI/180,gm=gam(A)*Math.PI/180;
+  // prizma: chap yog‘ vertikal, cho‘qqi tepada, o‘ng yog‘ chap yog‘ bilan α burchak
+  const px=w*0.3,top=h*0.08,H=h*0.8;const rx=px+Math.tan(a)*H;g.fillStyle="rgba(150,210,200,.5)";g.beginPath();g.moveTo(px,top);g.lineTo(px,top+H);g.lineTo(rx,top+H);g.closePath();g.fill();g.strokeStyle=C.ink;g.lineWidth=2;g.stroke();
+  g.fillStyle=C.ink;g.font="13px 'Golos Text',system-ui,sans-serif";g.fillText("α",px+4,top+28);
+  const ry=top+H*0.55,ox=px+Math.tan(a)*(ry-top),oy=ry;// O nuqta o‘ng yog‘da
+  g.strokeStyle="#E0A91C";g.lineWidth=3;g.beginPath();g.moveTo(w*0.02,ry);g.lineTo(ox,oy);g.stroke();g.fillStyle="#555";g.fillRect(w*0.02,ry-14,6,28);
+  // normal o‘ng yog‘ga: yog‘ yo‘nalishi (sin a, cos a); tashqi normal (cos a, -sin a)
+  const nx=Math.cos(a),ny=-Math.sin(a);g.setLineDash([4,4]);g.strokeStyle=C.muted;g.lineWidth=1;g.beginPath();g.moveTo(ox-nx*80,oy-ny*80);g.lineTo(ox+nx*140,oy+ny*140);g.stroke();
+  g.beginPath();g.moveTo(ox,oy);g.lineTo(ox+300,oy);g.strokeStyle="rgba(224,169,28,.6)";g.stroke();g.setLineDash([]);
+  // chiqqan nur: gorizontaldan pastga γ ga burilgan (asosga tomon)
+  const dx=Math.cos(gm),dy=Math.sin(gm);g.strokeStyle="#E0A91C";g.lineWidth=3;g.beginPath();g.moveTo(ox,oy);g.lineTo(ox+dx*w,oy+dy*w);g.stroke();
+  // transportir
+  const R=zoom?Math.min(w-ox-8,(h-oy-8)/Math.sin(Math.PI/3)):w*0.22;g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.fillStyle="rgba(255,255,255,.55)";g.beginPath();g.moveTo(ox,oy);g.arc(ox,oy,R,-0.15,Math.PI/2.3);g.closePath();g.fill();
+  g.strokeStyle=C.ink;g.lineWidth=1;g.fillStyle=C.ink;g.font=(zoom?11:9)+"px 'Golos Text',system-ui,sans-serif";
+  for(let d=0;d<=60;d++){const t=d*Math.PI/180,L=d%10===0?14:d%5===0?9:5;g.beginPath();g.moveTo(ox+Math.cos(t)*R,oy+Math.sin(t)*R);g.lineTo(ox+Math.cos(t)*(R-L),oy+Math.sin(t)*(R-L));g.stroke();if(d%10===0)g.fillText(String(d),ox+Math.cos(t)*(R-24)-6,oy+Math.sin(t)*(R-24)+4);}
+  g.restore();g.fillStyle=C.ink;g.font="12px 'Golos Text',system-ui,sans-serif";g.fillText("O",ox-14,oy-6);g.fillText("γ",ox+40,oy+Math.tan(gm/2)*40+4);}
+visibleLoop(document.getElementById("pCanvas"),()=>draw());
+function render(){const tb=document.getElementById("tb");tb.innerHTML=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.a+'°</td><td><input class="num" style="width:5em" aria-label="sin alfa"></td><td><input class="num" style="width:4em" aria-label="gamma"></td><td><input class="num" style="width:5em" aria-label="sin(alfa+gamma)"></td><td><input class="num" style="width:5em" aria-label="n"></td></tr>').join("");}
+document.getElementById("rec").onclick=()=>{if(rows.some(r=>r.a===A)){document.getElementById("res").textContent="Bu burchak allaqachon jadvalda. Boshqa prizma burchagini tanlang.";return;}rows.push({a:A,g:gam(A)});if(rows.length>3)rows.shift();render();document.getElementById("res").textContent="";};
+document.getElementById("chk").onclick=()=>{if(!rows.length)return;let ok=0,tot=0,ns=[];
+  [...document.querySelectorAll("#tb tr")].forEach((tr,i)=>{const r=rows[i],ins=tr.querySelectorAll("input"),v=[...ins].map(x=>parseNum(x.value));const gRead=v[1];
+    const cks=[[v[0],Math.sin(r.a*Math.PI/180),0.01],[v[1],r.g,1.01],[v[2],isFinite(gRead)?Math.sin((r.a+gRead)*Math.PI/180):NaN,0.01],[v[3],isFinite(gRead)?Math.sin((r.a+gRead)*Math.PI/180)/Math.sin(r.a*Math.PI/180):NaN,0.01]];
+    cks.forEach(([x,t,tol],k)=>{tot++;const good=isFinite(x)&&isFinite(t)&&Math.abs(x-t)<=(k===1?tol:Math.abs(t)*tol+0.005);if(good)ok++;ins[k].style.borderColor=good?"var(--good)":"var(--bad)";});if(isFinite(v[3]))ns.push(v[3]);});
+  const avg=ns.length?ns.reduce((a,b)=>a+b,0)/ns.length:NaN,va=parseNum(document.getElementById("navg").value),ga=isFinite(va)&&Math.abs(va-avg)<0.01;document.getElementById("navg").style.borderColor=ga?"var(--good)":"var(--bad)";
+  document.getElementById("res").innerHTML=ok+" / "+tot+" ta katak to‘g‘ri."+(ga?' <span class="ok-t">O‘rtacha n to‘g‘ri hisoblangan.</span> Prizma shishasining haqiqiy n i ≈ '+fmt(nTrue,3)+".":" γ ni ±1° aniqlikda o‘qing.");};
+makeQuiz(document.getElementById("quiz"),[
+ {q:"α = 30°, γ = 18,6°. n = ?",o:["≈ 1,33","≈ 1,5","≈ 1,8","≈ 2"],a:1,e:"sin 48,6°/sin 30° ≈ 0,75/0,5."},
+ {q:"Nima uchun nur prizmaning birinchi yog‘ida sinmaydi?",o:["Shisha yupqa","Nur perpendikulyar tushadi","Havo yo‘q","Prizma shaffof emas"],a:1,e:"α = 0° bo‘lsa, β = 0°."}
+]);
+
+})();
+</script>
+</body>
+</html>

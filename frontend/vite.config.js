@@ -7,6 +7,7 @@ const djangoDevServer = process.env.DJANGO_DEV_SERVER;
 
 export default defineConfig(({ command }) => ({
   base: command === "serve" ? "/" : "/static/frontend/",
+  publicDir: "../laboratory/lab_claude",
   plugins: [react(), tailwindcss()],
   server: {
     host: "127.0.0.1",

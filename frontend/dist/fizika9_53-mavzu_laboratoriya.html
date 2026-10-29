@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>53-§. Laboratoriya ishi: linzaning optik kuchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF0F5; --surface:#FFFFFF; --ink:#16233D; --muted:#55627A; --line:#C9D4E0;
+  --cobalt:#2C56C9; --pollen:#D99A12; --teal:#1F8F84; --trace:#D43F3A; --soft:#DCE6F0;
+  --good:#1E8A4C; --bad:#C2372F;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+    --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+    --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A2E; --surface:#172540; --ink:#E6ECF5; --muted:#9AA8C0; --line:#2A3B5C;
+  --cobalt:#7397F5; --pollen:#F2C14A; --teal:#3CC2B3; --trace:#F06A5E; --soft:#1D2D4D;
+  --good:#4CC47F; --bad:#F06A5E; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;}
+h1,h2,h3{font-family:"Unbounded","Golos Text",system-ui,sans-serif;line-height:1.2;margin:0;}
+h1{font-size:clamp(1.6rem,4.2vw,2.6rem);font-weight:700;letter-spacing:-.01em;}
+h2{font-size:clamp(1.25rem,2.6vw,1.65rem);font-weight:700;}
+h3{font-size:1.05rem;font-weight:500;}
+p{margin:.6em 0;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+button,input,select{font:inherit;color:inherit;}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;border-radius:6px;}
+img,canvas,svg{max-width:100%;}
+
+/* hero */
+.hero{padding:36px 0 28px;}
+.crumb{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:28px;align-items:start;}
+@media (min-width:900px){.hero-grid{grid-template-columns:5fr 7fr;}}
+.lead{font-size:1.1rem;color:var(--muted);max-width:42ch;}
+.def{margin-top:20px;padding:16px 18px;border-left:5px solid var(--teal);background:var(--surface);border-radius:0 12px 12px 0;}
+.def b{color:var(--teal);}
+
+.scope{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;}
+.scope-view{position:relative;border-radius:50%/50%;overflow:hidden;}
+.stage{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--soft);}
+.stage canvas{display:block;width:100%;height:100%;}
+.stage .tag{position:absolute;left:10px;top:8px;font-size:.82rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 8px;border-radius:8px;}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin-top:12px;}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);}
+.ctl output{color:var(--ink);font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--cobalt);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.btn{border:1.5px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:.93rem;}
+.btn:hover{border-color:var(--cobalt);}
+.btn[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.note{font-size:.92rem;color:var(--muted);margin-top:10px;}
+
+/* sections */
+section{padding:44px 0;border-top:1px solid var(--line);}
+.sec-head{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;}
+.sec-head .n{font-family:"Unbounded",sans-serif;color:var(--cobalt);font-size:1rem;}
+.intro{max-width:68ch;color:var(--muted);}
+
+.rules{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px;}
+@media (min-width:800px){.rules{grid-template-columns:repeat(3,1fr);}}
+.rules button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;padding:16px 18px;border-radius:14px;background:var(--surface);border:2px solid var(--line);}
+.rules button:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;}
+.rules button[aria-selected="true"]{border-color:var(--cobalt);box-shadow:inset 0 -4px 0 var(--cobalt);}
+.rules .k{font-family:"Unbounded",sans-serif;font-size:1.6rem;color:var(--cobalt);display:block;line-height:1;margin-bottom:6px;}
+.panel{margin-top:16px;display:grid;gap:22px;grid-template-columns:1fr;align-items:center;}
+@media (min-width:860px){.panel{grid-template-columns:7fr 5fr;}}
+.panel[hidden]{display:none;}
+
+.mode{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0 6px;flex-wrap:wrap;}
+.mode button{border:0;background:transparent;padding:7px 16px;cursor:pointer;}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--bg);}
+.meter{height:12px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line);}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--pollen));transition:width .3s;}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin:10px 0;font-size:.95rem;}
+.stats b{font-size:1.25rem;font-family:"Unbounded",sans-serif;font-weight:500;}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);flex-wrap:wrap;}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;}
+
+.force-state{font-family:"Unbounded",sans-serif;font-size:1.3rem;margin:6px 0;}
+
+/* timeline */
+.tl{list-style:none;padding:0;margin:24px 0 0;position:relative;}
+.tl::before{content:"";position:absolute;left:92px;top:6px;bottom:6px;width:2px;background:var(--line);}
+.tl li{display:grid;grid-template-columns:80px 1fr;gap:28px;padding:10px 0;position:relative;}
+.tl li::before{content:"";position:absolute;left:86px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--cobalt);}
+.tl .y{font-family:"Unbounded",sans-serif;font-size:.95rem;text-align:right;color:var(--cobalt);padding-top:6px;}
+.tl h3{margin-top:4px;}
+.tl p{margin:.2em 0 0;color:var(--muted);max-width:62ch;}
+
+/* questions */
+.qa{display:grid;gap:10px;margin-top:18px;}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+summary{cursor:pointer;font-weight:600;}
+details p{color:var(--muted);margin-bottom:0;}
+
+.quiz{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;}
+.quiz .prog{color:var(--muted);font-size:.92rem;}
+.quiz .q{font-size:1.15rem;font-weight:600;margin:8px 0 14px;}
+.opts{display:grid;gap:8px;}
+.opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);padding:11px 14px;border-radius:12px;cursor:pointer;}
+.opts button:hover:not(:disabled){border-color:var(--cobalt);}
+.opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface));}
+.opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));}
+.fb{min-height:1.6em;margin-top:12px;}
+.summary-box{margin-top:30px;padding:20px 22px;border-radius:16px;background:var(--ink);color:var(--bg);}
+.summary-box h3{color:var(--bg);margin-bottom:6px;}
+.summary-box ul{margin:8px 0 0;padding-left:20px;}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;}
+.theme-toggle{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+.formula{display:inline-block;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.25rem;padding:6px 14px;border:2px solid var(--cobalt);border-radius:10px;background:var(--surface);margin:4px 0;}
+.calc{display:grid;gap:10px;}
+.calc .row{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;}
+.calc .row .lhs{font-family:"Cambria Math","Times New Roman",serif;font-size:1.15rem;color:var(--cobalt);}
+.calc .row .rhs{font-variant-numeric:tabular-nums;}
+.big{font-family:"Unbounded","Golos Text",sans-serif;font-size:1.5rem;font-weight:500;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.num{width:7.5em;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);}
+select.num{width:auto;}
+.prob{counter-reset:none;}
+.prob details p,.prob details li{color:var(--ink);}
+.prob .given{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:.95rem;}
+.prob .given>div{background:var(--bg);border-radius:10px;padding:10px 12px;}
+.prob .given b{display:block;color:var(--muted);font-weight:500;margin-bottom:2px;}
+table.t{border-collapse:collapse;width:100%;min-width:480px;}
+.tablewrap{overflow-x:auto;}
+table.t th,table.t td{border:1px solid var(--line);padding:8px 10px;text-align:left;}
+table.t th{background:var(--soft);font-weight:600;}
+table.t input{width:100%;min-width:5em;}
+.ok-t{color:var(--good);font-weight:600;}.no-t{color:var(--bad);font-weight:600;}
+.home{display:grid;gap:12px;margin-top:16px;}
+@media (min-width:800px){.home{grid-template-columns:1fr 1fr;}}
+.home > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.home ol{padding-left:20px;margin:6px 0 0;}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="crumb">Fizika, 9-sinf. V bob: Yorug‘likning tarqalish qonunlari. Optik asboblar</div>
+    <h1>53-§. Laboratoriya ishi: linzaning optik kuchini aniqlash</h1>
+    <div class="def" style="max-width:80ch"><b>Maqsad:</b> linzaning fokus masofasini va optik kuchini aniqlashni o‘rganish. <b>Jihozlar:</b> qavariq linza, elektr lampa, ekran va masshtabli chizg‘ich (79-rasm).</div>
+    <p style="max-width:80ch">Linzani lampadan d masofaga qo‘ying, so‘ng ekranni surib, lampa tolasining eng aniq tasvirini toping. Linzaning fokus masofasi noma’lum — uni o‘lchovlardan topasiz.</p>
+    <div class="scope" style="margin-top:12px">
+      <div class="stage" style="aspect-ratio:16/6"><canvas id="bCanvas" role="img" aria-label="Optik skameyka: lampa, linza va ekran"></canvas></div>
+      <div class="controls">
+        <div class="ctl"><label for="d">Lampadan linzagacha d <output id="do"></output></label><input type="range" id="d" min="5" max="60" step="0.5" value="30"></div>
+        <div class="ctl"><label for="f">Linzadan ekrangacha f <output id="fo"></output></label><input type="range" id="f" min="5" max="100" step="0.5" value="40"></div>
+      </div>
+      <div class="btns" style="align-items:center"><div class="meter" style="flex:1;min-width:160px" aria-hidden="true"><i id="sharp"></i></div><span id="sharpT" style="min-width:12em"></span><button class="btn primary" id="rec">Jadvalga yozish</button></div>
+    </div>
+  </div>
+</header>
+<main>
+<section>
+  <div class="wrap prob">
+    <div class="sec-head"><span class="n">A</span><h2>Natijalar jadvali</h2></div>
+    <p class="intro">Uch xil d bilan o‘lchang. Har bir tajriba uchun F = df/(d + f) ni hisoblang, keyin o‘rtacha F va D = 1/F<sub>o‘rt</sub> ni toping (metrda!).</p>
+    <div class="tablewrap"><table class="t"><thead><tr><th>№</th><th>d, m</th><th>f, m</th><th>F, m</th></tr></thead><tbody id="tb"><tr><td colspan="4" class="note">Hali o‘lchov yo‘q.</td></tr></tbody></table></div>
+    <div class="btns" style="align-items:center"><label for="Fa">F<sub>o‘rt</sub> =</label><input class="num" id="Fa"> m <label for="Da">D =</label><input class="num" id="Da"> dptr <button class="btn primary" id="chk">Tekshirish</button></div>
+    <p id="res" aria-live="polite"></p>
+    <div class="home" style="margin-top:14px">
+      <div><h3>8–10-bandlar</h3><p>Linzani lampadan d = 2F, keyin F &lt; d &lt; 2F va d &lt; F masofaga qo‘yib, ekranda tasvirni qidiring. F ni topgach, modelda shu holatlarni sinab ko‘ring.</p></div>
+      <div><h3>Kuzatish</h3><p id="caseT">—</p></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">B</span><h2>Darslikdagi savollar</h2></div>
+    <div class="qa">
+      <details><summary>1. 8–9-bandlarda ekranda hosil qilingan tasvirlar bir-biridan qanday farq qiladi?</summary><p>d = 2F da tasvir buyumga teng, teskari, f = 2F da. F &lt; d &lt; 2F da tasvir kattalashgan, teskari, linzadan 2F dan uzoqda hosil bo‘ladi.</p></details>
+      <details><summary>2. 10-bandda nima sababdan ekranda tasvir hosil bo‘lmadi?</summary><p>d &lt; F bo‘lganda linzadan o‘tgan nurlar sochilib ketadi, ular kesishmaydi: haqiqiy tasvir yo‘q. Faqat nurlar davomi kesishib, lampa tomonida mavhum tasvir hosil bo‘ladi — uni ekranda olib bo‘lmaydi, lekin linza orqali qarasa ko‘rinadi (lupa).</p></details>
+      <details><summary>3. Tajriba natijalarini tahlil qiling.</summary><p>Uch o‘lchovdan topilgan F qiymatlari bir-biriga yaqin chiqadi: fokus masofasi buyum masofasiga bog‘liq emas, u linzaning o‘z xususiyati. Farqlar tasvirning “eng aniq” joyini ko‘z bilan tanlashdagi xatolikdan.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Manba: “Fizika” darsligi, 9-sinf (G‘afur G‘ulom nomidagi nashriyot-matbaa ijodiy uyi, 2019), 150-bet. Har safar linzaning fokus masofasi tasodifiy tanlanadi.</div></footer>
+
+<button class="btn theme-toggle" id="themeBtn" aria-label="Yorug‘ yoki qorong‘i rejim">◐</button>
+<script>
+(function(){
+"use strict";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let C = {};
+function readColors(){
+  const s = getComputedStyle(document.documentElement);
+  ["bg","surface","ink","muted","line","cobalt","pollen","teal","trace","soft","good","bad"].forEach(k=>C[k]=s.getPropertyValue("--"+k).trim());
+}
+readColors();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+try{const t=localStorage.getItem("fz-theme"); if(t){document.documentElement.dataset.theme=t; readColors();}}catch(e){}
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+  try{localStorage.setItem("fz-theme",r.dataset.theme);}catch(e){}
+  readColors();
+});
+const fmt=(x,d)=>x.toFixed(d).replace(".",",");
+function sci(x,d){ if(d===undefined)d=2; if(x===0||!isFinite(x)) return "0";
+  const e=Math.floor(Math.log10(Math.abs(x))); let m=x/Math.pow(10,e);
+  if(Math.abs(+m.toFixed(d))>=10){m/=10;}
+  const ee=Math.floor(Math.log10(Math.abs(x/m))+1e-9);
+  if(ee>=-2&&ee<=3) return fmt(+x.toFixed(Math.max(0,d-ee)),Math.max(0,d-ee)).replace(/,?0+$/,"").replace(/,$/,"");
+  const sup=String(ee).replace(/-/g,"⁻").replace(/\d/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[c]);
+  return fmt(m,d).replace(/,?0+$/,"")+"·10"+sup;
+}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function setupCanvas(cv){
+  const o={cv,ctx:cv.getContext("2d"),w:0,h:0};
+  function fit(){
+    const r=cv.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
+    if(r.width<2) return;
+    const ow=o.w, oh=o.h;
+    o.w=r.width; o.h=r.height; cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    o.ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(o.onResize) o.onResize(ow,oh);
+  }
+  o.fit=fit; new ResizeObserver(fit).observe(cv); fit(); return o;
+}
+function visibleLoop(el,step){
+  let vis=true,last=0;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0}).observe(el);
+  function frame(t){const dt=Math.min((t-last)/1000||0,0.04);last=t;if(vis)step(dt);requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+}
+function makeTabs(onChange){
+  const tabs=[...document.querySelectorAll('[role="tab"]')];
+  function sel(t){tabs.forEach(x=>{const on=x===t;x.setAttribute("aria-selected",on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute("aria-controls")).hidden=!on;});if(onChange)requestAnimationFrame(onChange);}
+  tabs.forEach((t,i)=>{t.tabIndex=t.getAttribute("aria-selected")==="true"?0:-1;t.addEventListener("click",()=>sel(t));
+    t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];sel(n);n.focus();}});});
+}
+function makeQuiz(box,QS){
+  const qz={i:0,score:0};
+  function render(){
+    if(qz.i>=QS.length){
+      box.innerHTML='<h3>Test yakunlandi</h3><p class="q">Natija: '+qz.score+' / '+QS.length+'</p><p>'+(qz.score===QS.length?"A’lo! Mavzuni to‘liq o‘zlashtirdingiz.":qz.score>=QS.length-2?"Yaxshi natija. Xato qilgan savollaringizga qaytib qarang.":"Mavzuni yana bir bor ko‘rib chiqing va modellar bilan tajriba qiling.")+'</p><button class="btn primary">Testni qayta ishlash</button>';
+      box.querySelector("button").onclick=()=>{qz.i=0;qz.score=0;render();};return;
+    }
+    const Q=QS[qz.i];
+    box.innerHTML='<div class="prog">Mini test: '+(qz.i+1)+'-savol, jami '+QS.length+' ta</div><div class="q">'+Q.q+'</div><div class="opts"></div><div class="fb"></div>';
+    const opts=box.querySelector(".opts"),fb=box.querySelector(".fb");
+    Q.o.forEach((t,j)=>{const b=document.createElement("button");b.innerHTML=t;b.onclick=()=>{
+      opts.querySelectorAll("button").forEach((x,k)=>{x.disabled=true;if(k===Q.a)x.classList.add("ok");});
+      if(j===Q.a){qz.score++;fb.innerHTML='<b style="color:var(--good)">To‘g‘ri.</b> '+Q.e;}else{b.classList.add("no");fb.innerHTML='<b style="color:var(--bad)">Noto‘g‘ri.</b> '+Q.e;}
+      const n=document.createElement("button");n.className="btn primary";n.style.marginTop="12px";n.textContent=qz.i+1<QS.length?"Keyingi savol":"Natijani ko‘rish";
+      n.onclick=()=>{qz.i++;render();const f=box.querySelector("button");if(f)f.focus();};fb.appendChild(document.createElement("br"));fb.appendChild(n);
+    };opts.appendChild(b);});
+  }
+  render();
+}
+/* jadval tekshirish: <input data-ans="28" data-tol="0.5"> */
+function makeCheckTable(btn,out){
+  btn.addEventListener("click",()=>{
+    const ins=[...document.querySelectorAll(btn.dataset.target.split(",").map(s=>s.trim()+" input").join(","))];let ok=0;
+    ins.forEach(i=>{const v=parseFloat(i.value.replace(",",".").replace(/\s/g,""));const a=+i.dataset.ans,tol=+(i.dataset.tol||0.01*Math.abs(a));
+      const good=isFinite(v)&&Math.abs(v-a)<=tol;if(good)ok++;i.style.borderColor=good?"var(--good)":"var(--bad)";});
+    out.textContent=ok+" / "+ins.length+" ta katak to‘g‘ri."+(ok<ins.length?" Qizil kataklarni qayta tekshiring.":" Barakalla!");
+  });
+}
+function parseNum(v){
+  let s=String(v).trim().replace(/\s/g,"").replace(/,/g,".").replace(/−/g,"-");
+  s=s.replace(/[·*x×]10\^?/i,"e").replace(/⁻/g,"-").replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(c));
+  if(/^10\^?-?\d+$/.test(s)) s="1e"+s.replace(/^10\^?/,"");
+  return s===""?NaN:Number(s);
+}
+/* masalalar: {q, ans, unit, tol(nisbiy), sol, hint} */
+function makeProblems(box,list){
+  list.forEach((p,i)=>{
+    const d=document.createElement("details");
+    const hasAns=p.ans!==undefined;
+    d.innerHTML='<summary>'+p.q+'</summary>'+
+      (hasAns?'<div class="btns" style="align-items:center"><label class="sr" for="pa'+box.id+i+'">Javob</label><input class="num" id="pa'+box.id+i+'" placeholder="javob"> <span>'+(p.unit||"")+'</span><button class="btn">Tekshirish</button>'+(p.hint?'<button class="btn">Maslahat</button>':'')+'<button class="btn">Yechimni ko‘rish</button></div><p class="fbk" aria-live="polite"></p>':'')+
+      '<div class="sol"'+(hasAns?' hidden':'')+'><p>'+p.sol+'</p></div>';
+    box.appendChild(d);
+    if(!hasAns) return;
+    const inp=d.querySelector("input"),bs=d.querySelectorAll(".btns button"),fb=d.querySelector(".fbk"),sol=d.querySelector(".sol");
+    const check=()=>{const v=parseNum(inp.value);const tol=p.tol||0.03;
+      if(!isFinite(v)){fb.innerHTML='<span class="no-t">Son kiriting.</span> Katta sonlarni 4,8e22 ko‘rinishida yozing.';return;}
+      const ok=Math.abs(v-p.ans)<=Math.abs(p.ans)*tol+(p.abs||0);
+      fb.innerHTML=ok?'<span class="ok-t">To‘g‘ri!</span>':'<span class="no-t">Hali to‘g‘ri emas.</span> Birliklarni XBS ga o‘tkazganingizni tekshiring.';
+      inp.style.borderColor=ok?"var(--good)":"var(--bad)"; if(ok) sol.hidden=false;};
+    bs[0].onclick=check; inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    if(p.hint){bs[1].onclick=()=>{fb.innerHTML="Maslahat: "+p.hint;};}
+    bs[bs.length-1].onclick=()=>{sol.hidden=false;};
+  });
+}
+
+
+const Ft=8+Math.round(Math.random()*24)/2;let rows=[];
+const dI=document.getElementById("d"),fI=document.getElementById("f");
+function st(){const d=+dI.value,f=+fI.value,ftrue=d>Ft?d*Ft/(d-Ft):Infinity,blur=isFinite(ftrue)?Math.abs(f-ftrue)/ftrue:9;const sharp=Math.max(0,1-blur*4);
+  document.getElementById("do").textContent=d+" cm";document.getElementById("fo").textContent=f+" cm";document.getElementById("sharp").style.width=(sharp*100)+"%";
+  document.getElementById("sharpT").textContent=!isFinite(ftrue)?"ekranda tasvir yo‘q":sharp>0.92?"tasvir aniq!":sharp>0.5?"deyarli aniq":"xira";
+  const K=isFinite(ftrue)?ftrue/d:0;document.getElementById("caseT").textContent=d<Ft?"d < F: ekranning qayerga qo‘yilmasin, tasvir hosil bo‘lmaydi.":Math.abs(d-2*Ft)<0.6?"d ≈ 2F: tasvir teskari va buyumga teng.":d<2*Ft?"F < d < 2F: tasvir teskari va kattalashgan (K = "+fmt(K,1)+").":"d > 2F: tasvir teskari va kichraygan (K = "+fmt(K,2)+").";
+  return{d,f,ftrue,sharp,K};}
+dI.oninput=fI.oninput=st;st();
+const BC=setupCanvas(document.getElementById("bCanvas"));
+function draw(){const s=st(),g=BC.ctx,w=BC.w,h=BC.h;if(!w)return;g.fillStyle=C.soft;g.fillRect(0,0,w,h);const sc=(w-60)/165,x0=30,X=v=>x0+v*sc,y=h*0.55;
+  g.fillStyle="#8C7350";g.fillRect(0,h*0.85,w,h*0.15);g.fillStyle="#E8D7B5";g.fillRect(x0,h*0.8,w-60,8);
+  for(let v=0;v<=160;v+=10){g.fillStyle=C.ink;g.fillRect(X(v),h*0.8,1,v%50?4:8);if(v%20===0){g.font="10px 'Golos Text',system-ui,sans-serif";g.fillText(String(v),X(v)-6,h*0.8+20);}}
+  // lampa
+  g.fillStyle="#FFE48A";g.beginPath();g.arc(X(0),y-6,14,0,6.283);g.fill();g.strokeStyle="#C09020";g.lineWidth=2;g.beginPath();g.moveTo(X(0)-5,y);g.lineTo(X(0),y-12);g.lineTo(X(0)+5,y);g.stroke();g.fillStyle="#555";g.fillRect(X(0)-6,y+8,12,h*0.8-y-8);
+  // linza
+  const lx=X(s.d);g.fillStyle="rgba(120,180,230,.6)";g.beginPath();g.ellipse(lx,y,6,h*0.28,0,0,6.283);g.fill();g.fillStyle="#555";g.fillRect(lx-2,y+h*0.28,4,h*0.8-y-h*0.28);
+  // ekran
+  const ex=X(s.d+s.f);g.fillStyle="#fff";g.fillRect(ex,y-h*0.32,8,h*0.64);g.strokeStyle=C.ink;g.lineWidth=1;g.strokeRect(ex,y-h*0.32,8,h*0.64);g.fillStyle="#555";g.fillRect(ex+2,y+h*0.32,4,h*0.8-y-h*0.32);
+  // tasvir ekranda
+  if(isFinite(s.ftrue)){const size=Math.min(h*0.28,12*s.K),bl=(1-s.sharp)*18+1;g.save();g.filter="blur("+bl.toFixed(1)+"px)";g.strokeStyle="#C09020";g.lineWidth=2.5;g.beginPath();g.moveTo(ex-4-size*0.4,y);g.lineTo(ex-4,y+size);g.lineTo(ex-4+size*0.4,y);g.stroke();g.restore();
+    g.fillStyle="rgba(255,230,140,"+(0.25+0.4*s.sharp)+")";g.beginPath();g.moveTo(lx,y-h*0.25);g.lineTo(ex,y-size*0.2);g.lineTo(ex,y+size*1.1);g.lineTo(lx,y+h*0.25);g.fill();}
+  g.fillStyle=C.ink;g.font="12px 'Golos Text',system-ui,sans-serif";g.fillText("d",(X(0)+lx)/2,h*0.15);g.fillText("f",(lx+ex)/2,h*0.15);}
+visibleLoop(document.getElementById("bCanvas"),()=>draw());
+function render(){document.getElementById("tb").innerHTML=rows.map((r,i)=>"<tr><td>"+(i+1)+"</td><td>"+fmt(r.d/100,3)+"</td><td>"+fmt(r.f/100,3)+'</td><td><input class="num" style="width:6em" aria-label="F"></td></tr>').join("");}
+document.getElementById("rec").onclick=()=>{const s=st();if(!isFinite(s.ftrue)||s.sharp<0.85){document.getElementById("res").textContent="Avval ekranni surib, aniq tasvir hosil qiling.";return;}if(rows.some(r=>Math.abs(r.d-s.d)<2)){document.getElementById("res").textContent="Boshqa d masofasini tanlang.";return;}rows.push({d:s.d,f:s.f});if(rows.length>3)rows.shift();render();document.getElementById("res").textContent="";};
+document.getElementById("chk").onclick=()=>{if(rows.length<3){document.getElementById("res").textContent="Uchta o‘lchov kerak.";return;}let ok=0;const Fs=rows.map(r=>r.d*r.f/(r.d+r.f)/100);
+  document.querySelectorAll("#tb input").forEach((inp,i)=>{const v=parseNum(inp.value),g=isFinite(v)&&Math.abs(v-Fs[i])/Fs[i]<0.02;if(g)ok++;inp.style.borderColor=g?"var(--good)":"var(--bad)";});
+  const avg=Fs.reduce((a,b)=>a+b,0)/3,va=parseNum(document.getElementById("Fa").value),vd=parseNum(document.getElementById("Da").value),ga=isFinite(va)&&Math.abs(va-avg)/avg<0.02,gd=isFinite(vd)&&Math.abs(vd-1/avg)/(1/avg)<0.03;
+  document.getElementById("Fa").style.borderColor=ga?"var(--good)":"var(--bad)";document.getElementById("Da").style.borderColor=gd?"var(--good)":"var(--bad)";
+  document.getElementById("res").innerHTML=ok+" / 3 ta F to‘g‘ri."+(ga&&gd?' <span class="ok-t">F<sub>o‘rt</sub> va D to‘g‘ri!</span> Linzaning haqiqiy fokus masofasi: '+fmt(Ft,1)+" cm, D = "+fmt(100/Ft,2)+" dptr.":" O‘rtacha F va D = 1/F ni tekshiring.");};
+
+})();
+</script>
+</body>
+</html>
